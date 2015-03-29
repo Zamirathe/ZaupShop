@@ -4,27 +4,43 @@ using Rocket.RocketAPI;
 using Rocket.Logging;
 using SDG;
 using UnityEngine;
+using Steamworks;
 
 namespace UconomyBasicShop
 {
-    public class CommandShop : Command
+    public class CommandShop : IRocketCommand
     {
-        public CommandShop()
+        public bool RunFromConsole
         {
-            this.commandName = "shop";
-            this.commandHelp = "Allows admins to change, add, or remove items/vehicles from the shop.";
-            this.commandInfo = this.commandName + " - " + this.commandHelp;
+            get
+            {
+                return true;
+            }
+        }
+        public string Name
+        {
+            get
+            {
+                return "shop";
+            }
+        }
+        public string Help
+        {
+            get
+            {
+                return "Allows admins to change, add, or remove items/vehicles from the shop.";
+            }
         }
 
-        protected override void execute(SteamPlayerID playerid, string msg)
+        public void Execute(CSteamID playerid, string msg)
         {
-            bool console = !RocketCommand.IsPlayer(playerid);
-            SteamPlayer splayer = PlayerTool.getSteamPlayer(playerid.CSteamID);
+            bool console = (!string.IsNullOrEmpty(playerid.ToString()) && playerid.ToString() != "0") ? false : true;
+            SteamPlayer splayer = PlayerTool.getSteamPlayer(playerid);
             string[] permnames = {"shop.*", "shop.add", "shop.rem", "shop.chng"};
             bool[] perms = {false, false, false, false};
             bool anyuse = false;
             string message;
-            string[] permlist = RocketPermissionManager.GetPermissions(playerid.CSteamID);
+            string[] permlist = RocketPermissionManager.GetPermissions(playerid);
             foreach (string s in permlist)
             {
                 switch (s)
@@ -64,7 +80,7 @@ namespace UconomyBasicShop
             }
             if (!anyuse) {
                 // Assume this is a player
-                RocketChatManager.Say(playerid.CSteamID, "You don't have permission to use the /shop command.");
+                RocketChatManager.Say(playerid, "You don't have permission to use the /shop command.");
                 return;
             }
             if (string.IsNullOrEmpty(msg))
@@ -183,7 +199,7 @@ namespace UconomyBasicShop
                 }
             }
         }
-        private void sendMessage(SteamPlayerID playerid, string message, bool console)
+        private void sendMessage(CSteamID playerid, string message, bool console)
         {
             if (console)
             {
@@ -191,7 +207,7 @@ namespace UconomyBasicShop
             }
             else
             {
-                RocketChatManager.Say(playerid.CSteamID, message);
+                RocketChatManager.Say(playerid, message);
             }
         }
     }

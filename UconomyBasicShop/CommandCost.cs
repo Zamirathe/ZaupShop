@@ -4,43 +4,42 @@ using Rocket.Logging;
 using SDG;
 using UnityEngine;
 using unturned.ROCKS.Uconomy;
+using Steamworks;
 
 namespace UconomyBasicShop
 {
-    public class CommandCost : Command
+    public class CommandCost : IRocketCommand
     {
-        public CommandCost()
+        public bool RunFromConsole
         {
-            this.commandName = "cost";
-            this.commandHelp = "Tells you the cost of a selected item.";
-            this.commandInfo = this.commandName + " - " + this.commandHelp;
+            get
+            {
+                return false;
+            }
+        }
+        public string Name
+        {
+            get
+            {
+                return "cost";
+            }
+        }
+        public string Help
+        {
+            get
+            {
+                return "Tells you the cost of a selected item.";
+            }
         }
 
-        protected override void execute(SteamPlayerID playerid, string msg)
+        public void Execute(CSteamID playerid, string msg)
         {
-            if (!RocketCommand.IsPlayer(playerid)) return;
-            SteamPlayer splayer = PlayerTool.getSteamPlayer(playerid.CSteamID);
-            string[] perms = RocketPermissionManager.GetPermissions(playerid.CSteamID);
-            bool perm = false;
-            foreach (string p in perms)
-            {
-                if (p == "cost")
-                {
-                    perm = true;
-                    break;
-                }
-            }
-            if (!perm)
-            {
-                RocketChatManager.Say(playerid.CSteamID, "You don't have permission to use the /cost command.");
-                return;
-            }
             string message;
             if (string.IsNullOrEmpty(msg))
             {
                 message = "Usage: /cost <v or i>.<name or id>.";
                 // We are going to print how to use
-                RocketChatManager.Say(playerid.CSteamID, message);
+                RocketChatManager.Say(playerid, message);
                 return;
             }
             string[] components = Parser.getComponentsFromSerial(msg, '.');
@@ -48,7 +47,7 @@ namespace UconomyBasicShop
             {
                 message = "Usage: /cost <v or i>.<name or id>.";
                 // We are going to print how to use
-                RocketChatManager.Say(playerid.CSteamID, message);
+                RocketChatManager.Say(playerid, message);
                 return;
             }
             ushort id;
@@ -74,7 +73,7 @@ namespace UconomyBasicShop
                     if (name == null && id == 0)
                     {
                         message = String.Format(UconomyBasicShop.Instance.Configuration.CouldNotFind, components[1]);
-                        RocketChatManager.Say(playerid.CSteamID, message);
+                        RocketChatManager.Say(playerid, message);
                         return;
                     }
                     else if (name == null && id != 0)
@@ -87,7 +86,7 @@ namespace UconomyBasicShop
                     {
                         message = "There was an error getting the cost of " + name + "!";
                     }
-                    RocketChatManager.Say(playerid.CSteamID, message);
+                    RocketChatManager.Say(playerid, message);
                     break;
                 default:
                     name = null;
@@ -109,7 +108,7 @@ namespace UconomyBasicShop
                     if (name == null && id == null)
                     {
                         message = String.Format(UconomyBasicShop.Instance.Configuration.CouldNotFind, components[1]);
-                        RocketChatManager.Say(playerid.CSteamID, message);
+                        RocketChatManager.Say(playerid, message);
                         return;
                     }
                     else if (name == null && id != null)
@@ -122,7 +121,7 @@ namespace UconomyBasicShop
                     {
                         message = "There was an error getting the cost of " + name + "!";
                     }
-                    RocketChatManager.Say(playerid.CSteamID, message);
+                    RocketChatManager.Say(playerid, message);
                     break;
             }
         }

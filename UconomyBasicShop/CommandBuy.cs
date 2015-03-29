@@ -3,43 +3,42 @@ using Rocket.RocketAPI;
 using SDG;
 using UnityEngine;
 using unturned.ROCKS.Uconomy;
+using Steamworks;
 
 namespace UconomyBasicShop
 {
-    public class CommandBuy : Command
+    public class CommandBuy : IRocketCommand
     {
-        public CommandBuy()
+        public bool RunFromConsole
         {
-            this.commandName = "buy";
-            this.commandHelp = "Allows you to buy items from the shop.";
-            this.commandInfo = this.commandName + " - " + this.commandHelp;
+            get
+            {
+                return false;
+            }
+        }
+        public string Name
+        {
+            get
+            {
+                return "buy";
+            }
+        }
+        public string Help
+        {
+            get
+            {
+                return "Allows you to buy items from the shop.";
+            }
         }
 
-        protected override void execute(SteamPlayerID playerid, string msg)
+        public void Execute(CSteamID playerid, string msg)
         {
-            if (!RocketCommand.IsPlayer(playerid)) return;
-            SteamPlayer splayer = PlayerTool.getSteamPlayer(playerid.CSteamID);
-            string[] perms = RocketPermissionManager.GetPermissions(playerid.CSteamID);
-            bool perm = false;
-            foreach (string p in perms)
-            {
-                if (p == "buy")
-                {
-                    perm = true;
-                    break;
-                }
-            }
-            if (!perm)
-            {
-                RocketChatManager.Say(playerid.CSteamID, "You don't have permission to use the /buy command.");
-                return;
-            }
             string message;
             if (string.IsNullOrEmpty(msg))
             {
                 message = "Usage: /buy <v or i>.<name or id>/<amount> (optional).";
                 // We are going to print how to use
-                RocketChatManager.Say(playerid.CSteamID, message);
+                RocketChatManager.Say(playerid, message);
                 return;
             }
             byte amttobuy = 1;
@@ -53,7 +52,7 @@ namespace UconomyBasicShop
             {
                 message = "Usage: /buy <v or i>.<name or id>/<amount> (optional).";
                 // We are going to print how to use
-                RocketChatManager.Say(playerid.CSteamID, message);
+                RocketChatManager.Say(playerid, message);
                 return;
             }
             ushort id;
@@ -62,7 +61,7 @@ namespace UconomyBasicShop
                 case "v":
                     if (!UconomyBasicShop.Instance.Configuration.CanBuyVehicles)
                     {
-                        RocketChatManager.Say(playerid.CSteamID, UconomyBasicShop.Instance.Configuration.BuyVehiclesOff);
+                        RocketChatManager.Say(playerid, UconomyBasicShop.Instance.Configuration.BuyVehiclesOff);
                         return;
                     }
                     string name = "";
@@ -84,7 +83,7 @@ namespace UconomyBasicShop
                     if (name == null && id == 0)
                     {
                         message = String.Format(UconomyBasicShop.Instance.Configuration.CouldNotFind, components[1]);
-                        RocketChatManager.Say(playerid.CSteamID, message);
+                        RocketChatManager.Say(playerid, message);
                         return;
                     }
                     else if (name == null && id != 0)
@@ -92,34 +91,34 @@ namespace UconomyBasicShop
                         name = ((VehicleAsset)Assets.find(EAssetType.Vehicle, id)).Name;
                     }
                     decimal cost = UconomyBasicShop.Instance.ShopDB.GetVehicleCost(id);
-                    decimal balance = Uconomy.Instance.Database.GetBalance(playerid.CSteamID);
+                    decimal balance = Uconomy.Instance.Database.GetBalance(playerid);
                     if (cost <= 0m)
                     {
                         message = String.Format(UconomyBasicShop.Instance.Configuration.VehicleNotAvailable, name);
-                        RocketChatManager.Say(playerid.CSteamID, message);
+                        RocketChatManager.Say(playerid, message);
                         return;
                     }
                     if (balance < cost)
                     {
                         message = String.Format(UconomyBasicShop.Instance.Configuration.NotEnoughCurrencyMsg, Uconomy.Instance.Configuration.MoneyName, name);
-                        RocketChatManager.Say(playerid.CSteamID, message);
+                        RocketChatManager.Say(playerid, message);
                         return;
                     }
-                    Player player = PlayerTool.getPlayer(playerid.CSteamID);
+                    Player player = PlayerTool.getPlayer(playerid);
                     if (!VehicleTool.giveVehicle(player, id))
                     {
-                        RocketChatManager.Say(playerid.CSteamID, "There was an error giving you " + name + ".  You have not been charged.");
+                        RocketChatManager.Say(playerid, "There was an error giving you " + name + ".  You have not been charged.");
                         return;
                     }
-                    decimal newbal = Uconomy.Instance.Database.IncreaseBalance(playerid.CSteamID, (cost * -1));
+                    decimal newbal = Uconomy.Instance.Database.IncreaseBalance(playerid, (cost * -1));
                     message = String.Format(UconomyBasicShop.Instance.Configuration.VehicleBuyMsg, name, cost, Uconomy.Instance.Configuration.MoneyName, newbal, Uconomy.Instance.Configuration.MoneyName);
                     message = "You bought " + name + " for " + cost.ToString() + " " + Uconomy.Instance.Configuration.MoneyName + ".";
-                    RocketChatManager.Say(playerid.CSteamID, message);
+                    RocketChatManager.Say(playerid, message);
                     break;
                 default:
                     if (!UconomyBasicShop.Instance.Configuration.CanBuyItems)
                     {
-                        RocketChatManager.Say(playerid.CSteamID, UconomyBasicShop.Instance.Configuration.BuyItemsOff);
+                        RocketChatManager.Say(playerid, UconomyBasicShop.Instance.Configuration.BuyItemsOff);
                         return;
                     }
                     name = null;
@@ -141,7 +140,7 @@ namespace UconomyBasicShop
                     if (name == null && id == null)
                     {
                         message = String.Format(UconomyBasicShop.Instance.Configuration.CouldNotFind, components[1]);
-                        RocketChatManager.Say(playerid.CSteamID, message);
+                        RocketChatManager.Say(playerid, message);
                         return;
                         
                     }
@@ -150,28 +149,28 @@ namespace UconomyBasicShop
                         name = ((ItemAsset)Assets.find(EAssetType.Item, id)).Name;
                     }
                     cost = UconomyBasicShop.Instance.ShopDB.GetItemCost(id) * amttobuy;
-                    balance = Uconomy.Instance.Database.GetBalance(playerid.CSteamID);
+                    balance = Uconomy.Instance.Database.GetBalance(playerid);
                     if (cost <= 0m)
                     {
                         message = String.Format(UconomyBasicShop.Instance.Configuration.ItemNotAvailable, name);
-                        RocketChatManager.Say(playerid.CSteamID, message);
+                        RocketChatManager.Say(playerid, message);
                         return;
                     }
                     if (balance < cost)
                     {
                         message = String.Format(UconomyBasicShop.Instance.Configuration.NotEnoughCurrencyMsg, Uconomy.Instance.Configuration.MoneyName, amttobuy, name);
-                        RocketChatManager.Say(playerid.CSteamID, message);
+                        RocketChatManager.Say(playerid, message);
                         return;
                     }
-                    player = PlayerTool.getPlayer(playerid.CSteamID);
+                    player = PlayerTool.getPlayer(playerid);
                         if (!ItemTool.tryForceGiveItem(player, id, amttobuy))
                         {
-                            RocketChatManager.Say(playerid.CSteamID, "There was an error giving you " + name + ".  You have not been charged.");
+                            RocketChatManager.Say(playerid, "There was an error giving you " + name + ".  You have not been charged.");
                             return;
                         }
-                    newbal = Uconomy.Instance.Database.IncreaseBalance(playerid.CSteamID, (cost * -1));
+                    newbal = Uconomy.Instance.Database.IncreaseBalance(playerid, (cost * -1));
                     message = String.Format(UconomyBasicShop.Instance.Configuration.ItemBuyMsg, name, cost, Uconomy.Instance.Configuration.MoneyName, newbal, Uconomy.Instance.Configuration.MoneyName, amttobuy);
-                    RocketChatManager.Say(playerid.CSteamID, message);
+                    RocketChatManager.Say(playerid, message);
                     break;
             }
         }
