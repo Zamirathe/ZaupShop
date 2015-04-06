@@ -31,7 +31,7 @@ namespace UconomyBasicShop
             }
         }
 
-        public void Execute(CSteamID playerid, string msg)
+        public void Execute(RocketPlayer playerid, string msg)
         {
             string message;
             if (string.IsNullOrEmpty(msg))
@@ -91,7 +91,7 @@ namespace UconomyBasicShop
                         name = ((VehicleAsset)Assets.find(EAssetType.Vehicle, id)).Name;
                     }
                     decimal cost = UconomyBasicShop.Instance.ShopDB.GetVehicleCost(id);
-                    decimal balance = Uconomy.Instance.Database.GetBalance(playerid);
+                    decimal balance = Uconomy.Instance.Database.GetBalance(playerid.CSteamID);
                     if (cost <= 0m)
                     {
                         message = String.Format(UconomyBasicShop.Instance.Configuration.VehicleNotAvailable, name);
@@ -104,13 +104,12 @@ namespace UconomyBasicShop
                         RocketChatManager.Say(playerid, message);
                         return;
                     }
-                    Player player = PlayerTool.getPlayer(playerid);
-                    if (!VehicleTool.giveVehicle(player, id))
+                    if (!playerid.GiveVehicle(id))
                     {
                         RocketChatManager.Say(playerid, "There was an error giving you " + name + ".  You have not been charged.");
                         return;
                     }
-                    decimal newbal = Uconomy.Instance.Database.IncreaseBalance(playerid, (cost * -1));
+                    decimal newbal = Uconomy.Instance.Database.IncreaseBalance(playerid.CSteamID, (cost * -1));
                     message = String.Format(UconomyBasicShop.Instance.Configuration.VehicleBuyMsg, name, cost, Uconomy.Instance.Configuration.MoneyName, newbal, Uconomy.Instance.Configuration.MoneyName);
                     message = "You bought " + name + " for " + cost.ToString() + " " + Uconomy.Instance.Configuration.MoneyName + ".";
                     RocketChatManager.Say(playerid, message);
@@ -149,7 +148,7 @@ namespace UconomyBasicShop
                         name = ((ItemAsset)Assets.find(EAssetType.Item, id)).Name;
                     }
                     cost = UconomyBasicShop.Instance.ShopDB.GetItemCost(id) * amttobuy;
-                    balance = Uconomy.Instance.Database.GetBalance(playerid);
+                    balance = Uconomy.Instance.Database.GetBalance(playerid.CSteamID);
                     if (cost <= 0m)
                     {
                         message = String.Format(UconomyBasicShop.Instance.Configuration.ItemNotAvailable, name);
@@ -162,13 +161,12 @@ namespace UconomyBasicShop
                         RocketChatManager.Say(playerid, message);
                         return;
                     }
-                    player = PlayerTool.getPlayer(playerid);
-                        if (!ItemTool.tryForceGiveItem(player, id, amttobuy))
+                        if (!playerid.GiveItem(id, amttobuy))
                         {
                             RocketChatManager.Say(playerid, "There was an error giving you " + name + ".  You have not been charged.");
                             return;
                         }
-                    newbal = Uconomy.Instance.Database.IncreaseBalance(playerid, (cost * -1));
+                    newbal = Uconomy.Instance.Database.IncreaseBalance(playerid.CSteamID, (cost * -1));
                     message = String.Format(UconomyBasicShop.Instance.Configuration.ItemBuyMsg, name, cost, Uconomy.Instance.Configuration.MoneyName, newbal, Uconomy.Instance.Configuration.MoneyName, amttobuy);
                     RocketChatManager.Say(playerid, message);
                     break;

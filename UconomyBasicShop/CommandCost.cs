@@ -32,7 +32,7 @@ namespace UconomyBasicShop
             }
         }
 
-        public void Execute(CSteamID playerid, string msg)
+        public void Execute(RocketPlayer playerid, string msg)
         {
             string message;
             if (string.IsNullOrEmpty(msg))

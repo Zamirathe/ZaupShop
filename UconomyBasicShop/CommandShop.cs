@@ -32,15 +32,14 @@ namespace UconomyBasicShop
             }
         }
 
-        public void Execute(CSteamID playerid, string msg)
+        public void Execute(RocketPlayer playerid, string msg)
         {
-            bool console = (!string.IsNullOrEmpty(playerid.ToString()) && playerid.ToString() != "0") ? false : true;
-            SteamPlayer splayer = PlayerTool.getSteamPlayer(playerid);
+            bool console = (playerid == null) ? true : false;
             string[] permnames = {"shop.*", "shop.add", "shop.rem", "shop.chng"};
             bool[] perms = {false, false, false, false};
             bool anyuse = false;
             string message;
-            string[] permlist = RocketPermissionManager.GetPermissions(playerid);
+            List<string> permlist = (console) ? new List<string>() : RocketPermissionManager.GetPermissions(playerid.CSteamID);
             foreach (string s in permlist)
             {
                 switch (s)
@@ -70,7 +69,7 @@ namespace UconomyBasicShop
                         break;
                 }
             }
-            if (console || splayer.IsAdmin)
+            if (console || playerid.IsAdmin)
             {
                 perms[0] = true;
                 perms[1] = true;
@@ -199,7 +198,7 @@ namespace UconomyBasicShop
                 }
             }
         }
-        private void sendMessage(CSteamID playerid, string message, bool console)
+        private void sendMessage(RocketPlayer playerid, string message, bool console)
         {
             if (console)
             {
