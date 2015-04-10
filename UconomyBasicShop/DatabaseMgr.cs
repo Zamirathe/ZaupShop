@@ -60,7 +60,16 @@ namespace UconomyBasicShop
             MySqlConnection mySqlConnection = null;
             try
             {
-                mySqlConnection = new MySqlConnection(string.Format("SERVER={0};DATABASE={1};UID={2};PASSWORD={3};", new object[] { Uconomy.Instance.Configuration.DatabaseAddress, Uconomy.Instance.Configuration.DatabaseName, Uconomy.Instance.Configuration.DatabaseUsername, Uconomy.Instance.Configuration.DatabasePassword }));
+                if (Uconomy.Instance.Configuration.DatabasePort == 0)
+                {
+                    Uconomy.Instance.Configuration.DatabasePort = 3306;
+                }
+                mySqlConnection = new MySqlConnection(string.Format("SERVER={0};DATABASE={1};UID={2};PASSWORD={3};PORT={4};", new object[] { 
+                    Uconomy.Instance.Configuration.DatabaseAddress, 
+                    Uconomy.Instance.Configuration.DatabaseName, 
+                    Uconomy.Instance.Configuration.DatabaseUsername, 
+                    Uconomy.Instance.Configuration.DatabasePassword,
+                    Uconomy.Instance.Configuration.DatabasePort}));
             }
             catch (Exception exception)
             {
