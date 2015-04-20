@@ -27,7 +27,7 @@ namespace UconomyBasicShop
                 mySqlConnection.Open();
                 if (mySqlCommand.ExecuteScalar() == null)
                 {
-                    mySqlCommand.CommandText = string.Concat("CREATE TABLE `", UconomyBasicShop.Instance.Configuration.ItemShopTableName, "` (`id` int(6) NOT NULL,`itemname` varchar(32) NOT NULL,`cost` decimal(15,2) NOT NULL DEFAULT '20.00',PRIMARY KEY (`id`)) ");
+                    mySqlCommand.CommandText = string.Concat("CREATE TABLE `", UconomyBasicShop.Instance.Configuration.ItemShopTableName, "` (`id` int(6) NOT NULL,`itemname` varchar(32) NOT NULL,`cost` decimal(15,2) NOT NULL DEFAULT '20.00',`buyback` decimal(15,2) NOT NULL DEFAULT '0.00',PRIMARY KEY (`id`)) ");
                     mySqlCommand.ExecuteNonQuery();
                 }
                 mySqlConnection.Close();
@@ -45,6 +45,23 @@ namespace UconomyBasicShop
                 if (mySqlCommand.ExecuteScalar() == null)
                 {
                     mySqlCommand.CommandText = string.Concat("CREATE TABLE `", UconomyBasicShop.Instance.Configuration.VehicleShopTableName, "` (`id` int(6) NOT NULL,`vehiclename` varchar(32) NOT NULL,`cost` decimal(15,2) NOT NULL DEFAULT '100.00',PRIMARY KEY (`id`)) ");
+                    mySqlCommand.ExecuteNonQuery();
+                }
+                mySqlConnection.Close();
+            }
+            catch (Exception exception)
+            {
+                Logger.LogException(exception);
+            }
+            try
+            {
+                MySqlConnection mySqlConnection = this.createConnection();
+                MySqlCommand mySqlCommand = mySqlConnection.CreateCommand();
+                mySqlCommand.CommandText = string.Concat("show columns from `", UconomyBasicShop.Instance.Configuration.ItemShopTableName, "` like 'buyback'");
+                mySqlConnection.Open();
+                if (mySqlCommand.ExecuteScalar() == null)
+                {
+                    mySqlCommand.CommandText = string.Concat("ALTER TABLE `", UconomyBasicShop.Instance.Configuration.ItemShopTableName, "` ADD `buyback` decimal(15,2) NOT NULL DEFAULT '0.00'");
                     mySqlCommand.ExecuteNonQuery();
                 }
                 mySqlConnection.Close();
@@ -115,9 +132,16 @@ namespace UconomyBasicShop
                         });
                 }
                 mySqlConnection.Open();
-                mySqlCommand.ExecuteNonQuery();
+                int affected = mySqlCommand.ExecuteNonQuery();
                 mySqlConnection.Close();
-                return true;
+                if (affected > 0)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
             catch (Exception exception)
             {
@@ -163,9 +187,16 @@ namespace UconomyBasicShop
                         });
                 }
                 mySqlConnection.Open();
-                mySqlCommand.ExecuteNonQuery();
+                int affected = mySqlCommand.ExecuteNonQuery();
                 mySqlConnection.Close();
-                return true;
+                if (affected > 0)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
             catch (Exception exception)
             {
@@ -247,9 +278,16 @@ namespace UconomyBasicShop
                         "';" 
                     });
                 mySqlConnection.Open();
-                mySqlCommand.ExecuteNonQuery();
+                int affected = mySqlCommand.ExecuteNonQuery();
                 mySqlConnection.Close();
-                return true;
+                if (affected > 0)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
             catch (Exception exception)
             {
@@ -273,15 +311,86 @@ namespace UconomyBasicShop
                         "';" 
                     });
                 mySqlConnection.Open();
-                mySqlCommand.ExecuteNonQuery();
+                int affected = mySqlCommand.ExecuteNonQuery();
                 mySqlConnection.Close();
-                return true;
+                if (affected > 0)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
             catch (Exception exception)
             {
                 Logger.LogException(exception);
                 return false;
             }
+        }
+
+        public bool SetBuyPrice(int id, decimal cost)
+        {
+            try
+            {
+                MySqlConnection mySqlConnection = this.createConnection();
+                MySqlCommand mySqlCommand = mySqlConnection.CreateCommand();
+                mySqlCommand.CommandText = string.Concat(
+                    new string[] { 
+                        "update `", 
+                        UconomyBasicShop.Instance.Configuration.ItemShopTableName,
+                        "` set `buyback`='",
+                        cost.ToString(), 
+                        "' where id='", 
+                        id.ToString(), 
+                        "';" 
+                    });
+                mySqlConnection.Open();
+                int affected = mySqlCommand.ExecuteNonQuery();
+                mySqlConnection.Close();
+                if (affected > 0)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch (Exception exception)
+            {
+                Logger.LogException(exception);
+                return false;
+            }
+        }
+
+        public decimal GetItemBuyPrice(int id)
+        {
+            decimal num = new decimal(0);
+            try
+            {
+                MySqlConnection mySqlConnection = this.createConnection();
+                MySqlCommand mySqlCommand = mySqlConnection.CreateCommand();
+                mySqlCommand.CommandText = string.Concat(new string[] { 
+                    "select `buyback` from `",
+                    UconomyBasicShop.Instance.Configuration.ItemShopTableName,
+                    "` where `id` = '",
+                    id.ToString(),
+                    "';" 
+                });
+                mySqlConnection.Open();
+                object obj = mySqlCommand.ExecuteScalar();
+                if (obj != null)
+                {
+                    decimal.TryParse(obj.ToString(), out num);
+                }
+                mySqlConnection.Close();
+            }
+            catch (Exception exception)
+            {
+                Logger.LogException(exception);
+            }
+            return num;
         }
     }
 }

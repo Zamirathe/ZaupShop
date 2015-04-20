@@ -71,6 +71,7 @@
   <ItemGroup>
     <Compile Include="CommandBuy.cs" />
     <Compile Include="CommandCost.cs" />
+    <Compile Include="CommandSell.cs" />
     <Compile Include="CommandShop.cs" />
     <Compile Include="DatabaseMgr.cs" />
     <Compile Include="UconomyBasicShop.cs" />
