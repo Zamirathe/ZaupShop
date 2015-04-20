@@ -20,7 +20,7 @@ namespace UconomyBasicShop
             this.ShopDB = new DatabaseMgr();
         }
 
-        public delegate void PlayerShopBuy(RocketPlayer player, decimal amt, byte items, ushort item);
+        public delegate void PlayerShopBuy(RocketPlayer player, decimal amt, byte items, ushort item, string type="item");
         public event PlayerShopBuy OnShopBuy;
         public delegate void PlayerShopSell(RocketPlayer player, decimal amt, byte items, ushort item);
         public event PlayerShopSell OnShopSell;
@@ -107,7 +107,7 @@ namespace UconomyBasicShop
                     message = String.Format(UconomyBasicShop.Instance.Configuration.VehicleBuyMsg, name, cost, Uconomy.Instance.Configuration.MoneyName, newbal, Uconomy.Instance.Configuration.MoneyName);
                     message = "You bought " + name + " for " + cost.ToString() + " " + Uconomy.Instance.Configuration.MoneyName + ".";
                     if (UconomyBasicShop.Instance.OnShopBuy != null)
-                        UconomyBasicShop.Instance.OnShopBuy(playerid, cost, 1, id);
+                        UconomyBasicShop.Instance.OnShopBuy(playerid, cost, 1, id, "vehicle");
                     RocketChatManager.Say(playerid, message);
                     break;
                 default:
@@ -354,11 +354,11 @@ namespace UconomyBasicShop
                     // These are single items, not ammo or magazines
                     while (amttosell > 0)
                     {
-                        if (playerid.Player.Equipment.checkSelection(list[0].W, list[0].ItemJar.PositionX, list[0].ItemJar.PositionY))
+                        if (playerid.Player.Equipment.checkSelection(list[0].InventoryGroup, list[0].ItemJar.PositionX, list[0].ItemJar.PositionY))
                         {
                             playerid.Player.Equipment.dequip();
                         }
-                        playerid.Inventory.removeItem(list[0].W, playerid.Inventory.getIndex(list[0].W, list[0].ItemJar.PositionX, list[0].ItemJar.PositionY));
+                        playerid.Inventory.removeItem(list[0].InventoryGroup, playerid.Inventory.getIndex(list[0].InventoryGroup, list[0].ItemJar.PositionX, list[0].ItemJar.PositionY));
                         list.RemoveAt(0);
                         amttosell--;
                     }
@@ -367,26 +367,26 @@ namespace UconomyBasicShop
                     // This is ammo or magazines
                     while (amttosell > 0)
                     {
-                        if (playerid.Player.Equipment.checkSelection(list[0].W, list[0].ItemJar.PositionX, list[0].ItemJar.PositionY))
+                        if (playerid.Player.Equipment.checkSelection(list[0].InventoryGroup, list[0].ItemJar.PositionX, list[0].ItemJar.PositionY))
                         {
                             playerid.Player.Equipment.dequip();
                         }
                         if (list[0].ItemJar.Item.Amount >= amttosell)
                         {
                             byte left = (byte)(list[0].ItemJar.Item.Amount - amttosell);
-                            playerid.Inventory.sendUpdateAmount(list[0].W, list[0].ItemJar.PositionX, list[0].ItemJar.PositionY, left);
+                            playerid.Inventory.sendUpdateAmount(list[0].InventoryGroup, list[0].ItemJar.PositionX, list[0].ItemJar.PositionY, left);
                             amttosell = 0;
                             if (left == 0)
                             {
-                                playerid.Inventory.removeItem(list[0].W, playerid.Inventory.getIndex(list[0].W, list[0].ItemJar.PositionX, list[0].ItemJar.PositionY));
+                                playerid.Inventory.removeItem(list[0].InventoryGroup, playerid.Inventory.getIndex(list[0].InventoryGroup, list[0].ItemJar.PositionX, list[0].ItemJar.PositionY));
                                 list.RemoveAt(0);
                             }
                         }
                         else
                         {
                             amttosell -= list[0].ItemJar.Item.Amount;
-                            playerid.Inventory.sendUpdateAmount(list[0].W, list[0].ItemJar.PositionX, list[0].ItemJar.PositionY, 0);
-                            playerid.Inventory.removeItem(list[0].W, playerid.Inventory.getIndex(list[0].W, list[0].ItemJar.PositionX, list[0].ItemJar.PositionY));
+                            playerid.Inventory.sendUpdateAmount(list[0].InventoryGroup, list[0].ItemJar.PositionX, list[0].ItemJar.PositionY, 0);
+                            playerid.Inventory.removeItem(list[0].InventoryGroup, playerid.Inventory.getIndex(list[0].InventoryGroup, list[0].ItemJar.PositionX, list[0].ItemJar.PositionY));
                             list.RemoveAt(0);
                         }
                     }
