@@ -395,7 +395,7 @@ namespace UconomyBasicShop
             decimal balance = Uconomy.Instance.Database.IncreaseBalance(playerid.CSteamID, addmoney);
             message = String.Format(UconomyBasicShop.Instance.Configuration.SoldItems, amt, name, addmoney, Uconomy.Instance.Configuration.MoneyName, balance, Uconomy.Instance.Configuration.MoneyName);
             if (UconomyBasicShop.Instance.OnShopSell != null)
-                UconomyBasicShop.Instance.OnShopSell(playerid, addmoney, amttosell, id);
+                UconomyBasicShop.Instance.OnShopSell(playerid, addmoney, amt, id);
             RocketChatManager.Say(playerid, message);
         }
 
