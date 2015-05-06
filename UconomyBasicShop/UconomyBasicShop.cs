@@ -471,6 +471,7 @@ namespace UconomyBasicShop
                     break;
                 default:
                     // This is ammo or magazines
+                    byte amttosell1 = amttosell;
                     while (amttosell > 0)
                     {
                         if (playerid.Player.Equipment.checkSelection(list[0].InventoryGroup, list[0].ItemJar.PositionX, list[0].ItemJar.PositionY))
@@ -480,6 +481,7 @@ namespace UconomyBasicShop
                         if (list[0].ItemJar.Item.Amount >= amttosell)
                         {
                             byte left = (byte)(list[0].ItemJar.Item.Amount - amttosell);
+                            list[0].ItemJar.Item.Amount = left;
                             playerid.Inventory.sendUpdateAmount(list[0].InventoryGroup, list[0].ItemJar.PositionX, list[0].ItemJar.PositionY, left);
                             amttosell = 0;
                             if (left == 0)
@@ -496,7 +498,7 @@ namespace UconomyBasicShop
                             list.RemoveAt(0);
                         }
                     }
-                    peritemprice = price * amttosell;
+                    peritemprice = decimal.Round(price * ((decimal)amttosell1 / (decimal)vAsset.Amount), 2);
                     addmoney += peritemprice;
                     break;
             }

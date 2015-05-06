@@ -4,7 +4,7 @@ using Rocket.Logging;
 
 namespace UconomyBasicShop
 {
-    public class UconomyBasicShopConfiguration : RocketConfiguration
+    public class UconomyBasicShopConfiguration : IRocketConfiguration
     {
         public string ItemShopTableName;
         public string VehicleShopTableName;
@@ -13,7 +13,7 @@ namespace UconomyBasicShop
         public bool CanSellItems;
         public bool QualityCounts;
 
-        public RocketConfiguration DefaultConfiguration
+        public IRocketConfiguration DefaultConfiguration
         {
             get
             {
