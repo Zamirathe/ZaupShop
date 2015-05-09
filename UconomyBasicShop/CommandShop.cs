@@ -32,7 +32,7 @@ namespace UconomyBasicShop
             }
         }
 
-        public void Execute(RocketPlayer playerid, string msg)
+        public void Execute(RocketPlayer playerid, string[] msg)
         {
             bool console = (playerid == null) ? true : false;
             string[] permnames = { "shop.*", "shop.add", "shop.rem", "shop.chng", "shop.buy" };
@@ -89,32 +89,31 @@ namespace UconomyBasicShop
                 RocketChatManager.Say(playerid, "You don't have permission to use the /shop command.");
                 return;
             }
-            if (string.IsNullOrEmpty(msg))
+            if (msg.Length == 0)
             {
-                message = "Usage: /shop <add/rem/chng/buy>/[v.]<itemid>/<cost>  <cost> is not required for rem, buy is only for items.";
+                message = UconomyBasicShop.Instance.Translate("shop_command_usage", new object[] {});
                 // We are going to print how to use
                 this.sendMessage(playerid, message, console);
                 return;
             }
-            string[] command = Parser.getComponentsFromSerial(msg, '/');
-            if (command.Length < 2)
+            if (msg.Length < 2)
             {
-                message = "An itemid is required.";
+                message = UconomyBasicShop.Instance.Translate("no_itemid_given", new object[] {});
                 this.sendMessage(playerid, message, console);
                 return;
             }
-            if (command.Length == 2 && command[0] != "rem")
+            if (msg.Length == 2 && msg[0] != "rem")
             {
-                message = "A cost is required.";
+                message = UconomyBasicShop.Instance.Translate("no_cost_given", new object[] { });
                 this.sendMessage(playerid, message, console);
                 return;
             }
-            else if (command.Length >= 2)
+            else if (msg.Length >= 2)
             {
-                string[] type = Parser.getComponentsFromSerial(command[1], '.');
+                string[] type = Parser.getComponentsFromSerial(msg[1], '.');
                 if (type.Length > 1 && type[0] != "v")
                 {
-                    message = "You must specify v for vehicle or just an item id.  Ex. /shop rem/101";
+                    message = UconomyBasicShop.Instance.Translate("v_not_provided", new object[] { });
                     this.sendMessage(playerid, message, console);
                     return;
                 }
@@ -122,14 +121,14 @@ namespace UconomyBasicShop
                 if (type.Length > 1)
                 {
                     if (!ushort.TryParse(type[1], out id)) {
-                        message = "You need to provide an item or vehicle id.";
+                        message = UconomyBasicShop.Instance.Translate("invalid_id_given", new object[] { });
                         this.sendMessage(playerid, message, console);
                         return;
                     }
                 } else {
                     if (!ushort.TryParse(type[0], out id))
                     {
-                        message = "You need to provide an item or vehicle id.";
+                        message = UconomyBasicShop.Instance.Translate("invalid_id_given", new object[] { });
                         this.sendMessage(playerid, message, console);
                         return;
                     }
@@ -138,12 +137,12 @@ namespace UconomyBasicShop
                 bool success = false;
                 bool change = false;
                 bool pass = false;
-                switch (command[0])
+                switch (msg[0])
                 {
                     case "chng":
                         if (!perms[3] && !perms[0])
                         {
-                            message = "You don't have permission to use the shop chng command.";
+                            message = UconomyBasicShop.Instance.Translate("no_permission_shop_chng", new object[] { });
                             this.sendMessage(playerid, message, console);
                             return;
                         }
@@ -155,31 +154,39 @@ namespace UconomyBasicShop
                         {
                             if (!perms[1] && !perms[0])
                             {
-                                message = "You don't have permission to use the shop add command.";
+                                message = UconomyBasicShop.Instance.Translate("no_permission_shop_add", new object[] { });
                                 this.sendMessage(playerid, message, console);
                                 return;
                             }
                         }
-                        string ac = (pass) ? "changed" : "added";
+                        string ac = (pass) ? UconomyBasicShop.Instance.Translate("changed", new object[] { }) : UconomyBasicShop.Instance.Translate("added", new object[] { });
                         switch (type[0])
                         {
                             case "v":
                                 VehicleAsset va = (VehicleAsset)Assets.find(EAssetType.Vehicle, id);
-                                message = "You have " + ac + " the " + va.Name + " with cost " + command[2] + " to the shop.";
-                                success = UconomyBasicShop.Instance.ShopDB.AddVehicle((int)id, va.Name, decimal.Parse(command[2]), change);
+                                message = UconomyBasicShop.Instance.Translate("changed_or_added_to_shop", new object[] { 
+                                    ac,
+                                    va.Name,
+                                    msg[2]
+                                });
+                                success = UconomyBasicShop.Instance.ShopDB.AddVehicle((int)id, va.Name, decimal.Parse(msg[2]), change);
                                 if (!success)
                                 {
-                                    message = "There was an error adding/changing " + va.Name + "!";
+                                    message = UconomyBasicShop.Instance.Translate("error_adding_or_changing", new object[] { va.Name });
                                 }
                                 this.sendMessage(playerid, message, console);
                                 break;
                             default:
                                 ItemAsset ia = (ItemAsset)Assets.find(EAssetType.Item, id);
-                                message = "You have " + ac + " the " + ia.Name + " with cost " + command[2] + " to the shop.";
-                                success = UconomyBasicShop.Instance.ShopDB.AddItem((int)id, ia.Name, decimal.Parse(command[2]), change);
+                                message = UconomyBasicShop.Instance.Translate("changed_or_added_to_shop", new object[] { 
+                                    ac,
+                                    ia.Name,
+                                    msg[2]
+                                });
+                                success = UconomyBasicShop.Instance.ShopDB.AddItem((int)id, ia.Name, decimal.Parse(msg[2]), change);
                                 if (!success)
                                 {
-                                    message = "There was an error adding/changing " + ia.Name + "!";
+                                    message = UconomyBasicShop.Instance.Translate("error_adding_or_changing", new object[] { ia.Name });
                                 }
                                 this.sendMessage(playerid, message, console);
                                 break;
@@ -188,7 +195,7 @@ namespace UconomyBasicShop
                     case "rem":
                         if (!perms[2] && !perms[0])
                         {
-                            message = "You don't have permission to use the shop rem command.";
+                            message = UconomyBasicShop.Instance.Translate("no_permission_shop_rem", new object[] { });
                             this.sendMessage(playerid, message, console);
                             return;
                         }
@@ -196,21 +203,21 @@ namespace UconomyBasicShop
                         {
                             case "v":
                                 VehicleAsset va = (VehicleAsset)Assets.find(EAssetType.Vehicle, id);
-                                message = "You have removed the " + va.Name + "from the shop.";
+                                message = UconomyBasicShop.Instance.Translate("removed_from_shop", new object[] { va.Name });
                                 success = UconomyBasicShop.Instance.ShopDB.DeleteVehicle((int)id);
                                 if (!success)
                                 {
-                                    message = va.Name + " wasn't in the shop, so couldn't be removed.";
+                                    message = UconomyBasicShop.Instance.Translate("not_in_shop_to_remove", new object[] { va.Name });
                                 }
                                 this.sendMessage(playerid, message, console);
                                 break;
                             default:
                                 ItemAsset ia = (ItemAsset)Assets.find(EAssetType.Item, id);
-                                message = "You have removed the " + ia.Name + " from the shop.";
+                                message = UconomyBasicShop.Instance.Translate("removed_from_shop", new object[] { ia.Name });
                                 success = UconomyBasicShop.Instance.ShopDB.DeleteItem((int)id);
                                 if (!success)
                                 {
-                                    message = ia.Name + " wasn't in the shop, so couldn't be removed.";
+                                    message = UconomyBasicShop.Instance.Translate("not_in_shop_to_remove", new object[] { ia.Name });
                                 }
                                 this.sendMessage(playerid, message, console);
                                 break;
@@ -219,24 +226,27 @@ namespace UconomyBasicShop
                     case "buy":
                         if (!perms[4] && !perms[0])
                         {
-                            message = "You don't have permission to use the shop buy command.";
+                            message = UconomyBasicShop.Instance.Translate("no_permission_shop_buy", new object[] { });
                             this.sendMessage(playerid, message, console);
                             return;
                         }
                         ItemAsset iab = (ItemAsset)Assets.find(EAssetType.Item, id);
                         decimal buyb;
-                        decimal.TryParse(command[2], out buyb);
-                        message = "You set the buyback price for " + iab.Name + " to " + buyb.ToString() + " in the shop.";
+                        decimal.TryParse(msg[2], out buyb);
+                        message = UconomyBasicShop.Instance.Translate("set_buyback_price", new object[] {
+                            iab.Name,
+                            buyb.ToString()
+                        });
                         success = UconomyBasicShop.Instance.ShopDB.SetBuyPrice((int)id, buyb);
                         if (!success)
                         {
-                            message = iab.Name + " isn't in the shop so can't set a buyback price.";
+                            message = UconomyBasicShop.Instance.Translate("not_in_shop_to_buyback", new object[] { iab.Name });
                         }
                         this.sendMessage(playerid, message, console);
                         break;
                     default:
                         // We shouldn't get this, but if we do send an error.
-                        message = "You entered an invalid shop command.";
+                        message = UconomyBasicShop.Instance.Translate("not_in_shop_to_remove", new object[] { });;
                         this.sendMessage(playerid, message, console);
                         return;
                 }

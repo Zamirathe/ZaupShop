@@ -32,7 +32,7 @@ namespace UconomyBasicShop
             }
         }
 
-        public void Execute(RocketPlayer playerid, string msg)
+        public void Execute(RocketPlayer playerid, string[] msg)
         {
             UconomyBasicShop.Instance.Cost(playerid, msg);
         }

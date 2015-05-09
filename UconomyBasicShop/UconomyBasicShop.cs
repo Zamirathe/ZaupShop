@@ -21,7 +21,7 @@ namespace UconomyBasicShop
                 {
                     {
                         "buy_command_usage",
-                        "Usage: /buy [v.]<name or id>/[amount]/[quality of 25, 50, 75, or 100] (last 2 optional and only for items, default 1 amount, 100 quality)."
+                        "Usage: /buy [v.]<name or id> [amount] [quality of 25, 50, 75, or 100] (last 2 optional and only for items, default 1 amount, 100 quality)."
                     },
                     {
                         "cost_command_usage",
@@ -29,7 +29,11 @@ namespace UconomyBasicShop
                     },
                     {
                         "sell_command_usage",
-                        "Usage: /sell <name or id>/[amount] (optional)."
+                        "Usage: /sell <name or id> [amount] (optional)."
+                    },
+                    {
+                        "shop_command_usage",
+                        "Usage: /shop <add/rem/chng/buy> [v.]<itemid> <cost>  <cost> is not required for rem, buy is only for items."
                     },
                     {
                         "error_giving_item",
@@ -102,6 +106,74 @@ namespace UconomyBasicShop
                     {
                         "no_sell_price_set",
                         "The shop is not buying {0} right now"
+                    },
+                    {
+                        "no_itemid_given",
+                        "An itemid is required."
+                    },
+                    {
+                        "no_cost_given",
+                        "A cost is required."
+                    },
+                    {
+                        "v_not_provided",
+                        "You must specify v for vehicle or just an item id.  Ex. /shop rem/101"
+                    },
+                    {
+                        "invalid_id_given",
+                        "You need to provide an item or vehicle id."
+                    },
+                    {
+                        "no_permission_shop_chng",
+                        "You don't have permission to use the shop chng msg."
+                    },
+                    {
+                        "no_permission_shop_add",
+                        "You don't have permission to use the shop add msg."
+                    },
+                    {
+                        "no_permission_shop_rem",
+                        "You don't have permission to use the shop rem msg."
+                    },
+                    {
+                        "no_permission_shop_buy",
+                        "You don't have permission to use the shop buy msg."
+                    },
+                    {
+                        "changed",
+                        "changed"
+                    },
+                    {
+                        "added",
+                        "added"
+                    },
+                    {
+                        "changed_or_added_to_shop",
+                        "You have {0} the {1} with cost {2} to the shop."
+                    },
+                    {
+                        "error_adding_or_changing",
+                        "There was an error adding/changing {0}!"
+                    },
+                    {
+                        "removed_from_shop",
+                        "You have removed the {0} from the shop."
+                    },
+                    {
+                        "not_in_shop_to_remove",
+                        "{0} wasn't in the shop, so couldn't be removed."
+                    },
+                    {
+                        "not_in_shop_to_set_buyback",
+                        "{0} isn't in the shop so can't set a buyback price."
+                    },
+                    {
+                        "set_buyback_price",
+                        "You set the buyback price for {0} to {1} in the shop."
+                    },
+                    {
+                        "invalid_shop_command",
+                        "You entered an invalid shop command."
                     }
                 };
             }
@@ -118,10 +190,10 @@ namespace UconomyBasicShop
         public delegate void PlayerShopSell(RocketPlayer player, decimal amt, byte items, ushort item);
         public event PlayerShopSell OnShopSell;
 
-        public void Buy(RocketPlayer playerid, string msg)
+        public void Buy(RocketPlayer playerid, string[] components0)
         {
             string message;
-            if (string.IsNullOrEmpty(msg))
+            if (components0.Length == 0)
             {
                 message = UconomyBasicShop.Instance.Translate("buy_command_usage", new object[] {});
                 // We are going to print how to use
@@ -129,7 +201,6 @@ namespace UconomyBasicShop
                 return;
             }
             byte amttobuy = 1;
-            string[] components0 = Parser.getComponentsFromSerial(msg, '/');
             if (components0.Length > 1)
             {
                 amttobuy = byte.Parse(components0[1]);
@@ -264,17 +335,16 @@ namespace UconomyBasicShop
                     break;
             }
         }
-        public void Cost(RocketPlayer playerid, string msg)
+        public void Cost(RocketPlayer playerid, string[] components)
         {
             string message;
-            if (string.IsNullOrEmpty(msg))
+            if (components.Length == 0)
             {
                 message = UconomyBasicShop.Instance.Translate("cost_command_usage", new object[] { });
                 // We are going to print how to use
                 RocketChatManager.Say(playerid, message);
                 return;
             }
-            string[] components = Parser.getComponentsFromSerial(msg, '.');
             if (components.Length == 2 && components[0] != "v")
             {
                 message = UconomyBasicShop.Instance.Translate("cost_command_usage", new object[] { });
@@ -358,10 +428,10 @@ namespace UconomyBasicShop
                     break;
             }
         }
-        public void Sell(RocketPlayer playerid, string msg)
+        public void Sell(RocketPlayer playerid, string[] components)
         {
             string message;
-            if (string.IsNullOrEmpty(msg))
+            if (components.Length == 0)
             {
                 message = UconomyBasicShop.Instance.Translate("sell_command_usage", new object[] { });
                 // We are going to print how to use
@@ -369,7 +439,6 @@ namespace UconomyBasicShop
                 return;
             }
             byte amttosell = 1;
-            string[] components = Parser.getComponentsFromSerial(msg, '/');
             if (components.Length > 1)
             {
                 amttosell = byte.Parse(components[1]);
