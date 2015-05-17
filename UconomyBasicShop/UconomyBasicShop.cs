@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using Rocket.RocketAPI;
-using Rocket.Logging;
+using Rocket.API;
+using Rocket.Unturned;
+using Rocket.Unturned.Player;
+using Rocket.Unturned.Plugins;
 using SDG;
 using UnityEngine;
 using unturned.ROCKS.Uconomy;
@@ -197,7 +199,7 @@ namespace UconomyBasicShop
             {
                 message = UconomyBasicShop.Instance.Translate("buy_command_usage", new object[] {});
                 // We are going to print how to use
-                RocketChatManager.Say(playerid, message);
+                RocketChat.Say(playerid, message);
                 return;
             }
             byte amttobuy = 1;
@@ -210,7 +212,7 @@ namespace UconomyBasicShop
             {
                 message = UconomyBasicShop.Instance.Translate("buy_command_usage", new object[] { });
                 // We are going to print how to use
-                RocketChatManager.Say(playerid, message);
+                RocketChat.Say(playerid, message);
                 return;
             }
             ushort id;
@@ -220,7 +222,7 @@ namespace UconomyBasicShop
                     if (!UconomyBasicShop.Instance.Configuration.CanBuyVehicles)
                     {
                         message = UconomyBasicShop.Instance.Translate("buy_vehicles_off", new object[] { });
-                        RocketChatManager.Say(playerid, message);
+                        RocketChat.Say(playerid, message);
                         return;
                     }
                     string name = "";
@@ -243,7 +245,7 @@ namespace UconomyBasicShop
                     {
                         message = UconomyBasicShop.Instance.Translate("could_not_find", new object[] {
                             components[1]});
-                        RocketChatManager.Say(playerid, message);
+                        RocketChat.Say(playerid, message);
                         return;
                     }
                     else if (name == null && id != 0)
@@ -255,19 +257,19 @@ namespace UconomyBasicShop
                     if (cost <= 0m)
                     {
                         message = UconomyBasicShop.Instance.Translate("vehicle_not_available", new object[] {name});
-                        RocketChatManager.Say(playerid, message);
+                        RocketChat.Say(playerid, message);
                         return;
                     }
                     if (balance < cost)
                     {
                         message = UconomyBasicShop.Instance.Translate("not_enough_currency_msg", new object[] {Uconomy.Instance.Configuration.MoneyName, name});
-                        RocketChatManager.Say(playerid, message);
+                        RocketChat.Say(playerid, message);
                         return;
                     }
                     if (!playerid.GiveVehicle(id))
                     {
                         message = UconomyBasicShop.Instance.Translate("error_giving_item", new object[] { name });
-                        RocketChatManager.Say(playerid, message);
+                        RocketChat.Say(playerid, message);
                         return;
                     }
                     decimal newbal = Uconomy.Instance.Database.IncreaseBalance(playerid.CSteamID, (cost * -1));
@@ -275,13 +277,13 @@ namespace UconomyBasicShop
                     if (UconomyBasicShop.Instance.OnShopBuy != null)
                         UconomyBasicShop.Instance.OnShopBuy(playerid, cost, 1, id, "vehicle");
                     playerid.Player.gameObject.SendMessage("ZaupShopOnBuy", new object[] { playerid, cost, amttobuy, id, "vehicle" }, SendMessageOptions.DontRequireReceiver);
-                    RocketChatManager.Say(playerid, message);
+                    RocketChat.Say(playerid, message);
                     break;
                 default:
                     if (!UconomyBasicShop.Instance.Configuration.CanBuyItems)
                     {
                         message = UconomyBasicShop.Instance.Translate("buy_items_off", new object[] { });
-                        RocketChatManager.Say(playerid, message);
+                        RocketChat.Say(playerid, message);
                         return;
                     }
                     name = null;
@@ -303,7 +305,7 @@ namespace UconomyBasicShop
                     if (name == null && id == 0)
                     {
                         message = UconomyBasicShop.Instance.Translate("could_not_find", new object[] {components[0]});
-                        RocketChatManager.Say(playerid, message);
+                        RocketChat.Say(playerid, message);
                         return;
 
                     }
@@ -316,13 +318,13 @@ namespace UconomyBasicShop
                     if (cost <= 0m)
                     {
                         message = UconomyBasicShop.Instance.Translate("item_not_available", new object[] {name});
-                        RocketChatManager.Say(playerid, message);
+                        RocketChat.Say(playerid, message);
                         return;
                     }
                     if (balance < cost)
                     {
                         message = UconomyBasicShop.Instance.Translate("not_enough_currency_msg", new object[] {Uconomy.Instance.Configuration.MoneyName, amttobuy, name});
-                        RocketChatManager.Say(playerid, message);
+                        RocketChat.Say(playerid, message);
                         return;
                     }
                     playerid.GiveItem(id, amttobuy, false);
@@ -331,7 +333,7 @@ namespace UconomyBasicShop
                     if (UconomyBasicShop.Instance.OnShopBuy != null)
                         UconomyBasicShop.Instance.OnShopBuy(playerid, cost, amttobuy, id);
                     playerid.Player.gameObject.SendMessage("ZaupShopOnBuy", new object[] { playerid, cost, amttobuy, id, "item" }, SendMessageOptions.DontRequireReceiver);
-                    RocketChatManager.Say(playerid, message);
+                    RocketChat.Say(playerid, message);
                     break;
             }
         }
@@ -342,14 +344,14 @@ namespace UconomyBasicShop
             {
                 message = UconomyBasicShop.Instance.Translate("cost_command_usage", new object[] { });
                 // We are going to print how to use
-                RocketChatManager.Say(playerid, message);
+                RocketChat.Say(playerid, message);
                 return;
             }
             if (components.Length == 2 && components[0] != "v")
             {
                 message = UconomyBasicShop.Instance.Translate("cost_command_usage", new object[] { });
                 // We are going to print how to use
-                RocketChatManager.Say(playerid, message);
+                RocketChat.Say(playerid, message);
                 return;
             }
             ushort id;
@@ -375,7 +377,7 @@ namespace UconomyBasicShop
                     if (name == null && id == 0)
                     {
                         message = UconomyBasicShop.Instance.Translate("could_not_find", new object[] {components[1]});
-                        RocketChatManager.Say(playerid, message);
+                        RocketChat.Say(playerid, message);
                         return;
                     }
                     else if (name == null && id != 0)
@@ -388,7 +390,7 @@ namespace UconomyBasicShop
                     {
                         message = UconomyBasicShop.Instance.Translate("error_getting_cost", new object[] {name});
                     }
-                    RocketChatManager.Say(playerid, message);
+                    RocketChat.Say(playerid, message);
                     break;
                 default:
                     name = null;
@@ -410,7 +412,7 @@ namespace UconomyBasicShop
                     if (name == null && id == 0)
                     {
                         message = UconomyBasicShop.Instance.Translate("could_not_find", new object[] {components[0]});
-                        RocketChatManager.Say(playerid, message);
+                        RocketChat.Say(playerid, message);
                         return;
                     }
                     else if (name == null && id != 0)
@@ -424,7 +426,7 @@ namespace UconomyBasicShop
                     {
                         message = UconomyBasicShop.Instance.Translate("error_getting_cost", new object[] {name});
                     }
-                    RocketChatManager.Say(playerid, message);
+                    RocketChat.Say(playerid, message);
                     break;
             }
         }
@@ -435,7 +437,7 @@ namespace UconomyBasicShop
             {
                 message = UconomyBasicShop.Instance.Translate("sell_command_usage", new object[] { });
                 // We are going to print how to use
-                RocketChatManager.Say(playerid, message);
+                RocketChat.Say(playerid, message);
                 return;
             }
             byte amttosell = 1;
@@ -448,7 +450,7 @@ namespace UconomyBasicShop
             if (!UconomyBasicShop.Instance.Configuration.CanSellItems)
             {
                 message = UconomyBasicShop.Instance.Translate("sell_items_off", new object[] { });
-                RocketChatManager.Say(playerid, message);
+                RocketChat.Say(playerid, message);
                 return;
             }
             string name = null;
@@ -471,7 +473,7 @@ namespace UconomyBasicShop
             if (name == null && id == 0)
             {
                 message = UconomyBasicShop.Instance.Translate("could_not_find", new object[] {components[0]});
-                RocketChatManager.Say(playerid, message);
+                RocketChat.Say(playerid, message);
                 return;
             }
             else if (name == null && id != 0)
@@ -483,14 +485,14 @@ namespace UconomyBasicShop
             if (playerid.Inventory.has(id) == null)
             {
                 message = UconomyBasicShop.Instance.Translate("no_have_item_sell", new object[] {name});
-                RocketChatManager.Say(playerid, message);
+                RocketChat.Say(playerid, message);
                 return;
             }
             List<InventorySearch> list = playerid.Inventory.search(id, true, true);
             if (list.Count == 0 || (vAsset.Amount == 1 && list.Count < amttosell))
             {
                 message = UconomyBasicShop.Instance.Translate("not_enough_items_sell", new object[] {amttosell.ToString(), name});
-                RocketChatManager.Say(playerid, message);
+                RocketChat.Say(playerid, message);
                 return;
             }
             if (vAsset.Amount > 1)
@@ -503,7 +505,7 @@ namespace UconomyBasicShop
                 if (ammomagamt < amttosell)
                 {
                     message = UconomyBasicShop.Instance.Translate("not_enough_ammo_sell", new object[] {name});
-                    RocketChatManager.Say(playerid, message);
+                    RocketChat.Say(playerid, message);
                     return;
                 }
             }
@@ -513,7 +515,7 @@ namespace UconomyBasicShop
             if (price <= 0.00m)
             {
                 message = UconomyBasicShop.Instance.Translate("no_sell_price_set", new object[] { name });
-                RocketChatManager.Say(playerid, message);
+                RocketChat.Say(playerid, message);
                 return;
             }
             byte quality = 100;
@@ -576,7 +578,7 @@ namespace UconomyBasicShop
             if (UconomyBasicShop.Instance.OnShopSell != null)
                 UconomyBasicShop.Instance.OnShopSell(playerid, addmoney, amt, id);
             playerid.Player.gameObject.SendMessage("ZaupShopOnSell", new object[] { playerid, addmoney, amt, id }, SendMessageOptions.DontRequireReceiver);
-            RocketChatManager.Say(playerid, message);
+            RocketChat.Say(playerid, message);
         }
 
     }

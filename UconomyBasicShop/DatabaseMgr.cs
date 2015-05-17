@@ -1,7 +1,7 @@
 ﻿using I18N.West;
 using MySql.Data.MySqlClient;
-using Rocket.Logging;
-using Rocket.RocketAPI;
+using Rocket.Unturned.Logging;
+using Rocket.API;
 using System;
 using unturned.ROCKS.Uconomy;
 

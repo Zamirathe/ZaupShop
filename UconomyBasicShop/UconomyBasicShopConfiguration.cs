@@ -1,10 +1,9 @@
 ﻿using System;
-using Rocket.RocketAPI;
-using Rocket.Logging;
+using Rocket.API;
 
 namespace UconomyBasicShop
 {
-    public class UconomyBasicShopConfiguration : IRocketConfiguration
+    public class UconomyBasicShopConfiguration : IRocketPluginConfiguration
     {
         public string ItemShopTableName;
         public string VehicleShopTableName;
@@ -13,7 +12,7 @@ namespace UconomyBasicShop
         public bool CanSellItems;
         public bool QualityCounts;
 
-        public IRocketConfiguration DefaultConfiguration
+        public IRocketPluginConfiguration DefaultConfiguration
         {
             get
             {

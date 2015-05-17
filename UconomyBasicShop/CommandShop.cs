@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using Rocket.RocketAPI;
-using Rocket.Logging;
+using Rocket.API;
+using Rocket.Unturned;
+using Rocket.Unturned.Commands;
+using Rocket.Unturned.Logging;
+using Rocket.Unturned.Player;
 using SDG;
 using UnityEngine;
 using Steamworks;
@@ -86,7 +89,7 @@ namespace UconomyBasicShop
             if (!anyuse)
             {
                 // Assume this is a player
-                RocketChatManager.Say(playerid, "You don't have permission to use the /shop command.");
+                RocketChat.Say(playerid, "You don't have permission to use the /shop command.");
                 return;
             }
             if (msg.Length == 0)
@@ -260,7 +263,7 @@ namespace UconomyBasicShop
             }
             else
             {
-                RocketChatManager.Say(playerid, message);
+                RocketChat.Say(playerid, message);
             }
         }
     }

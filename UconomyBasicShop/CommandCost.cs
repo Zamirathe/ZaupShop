@@ -1,6 +1,7 @@
 ﻿using System;
-using Rocket.RocketAPI;
-using Rocket.Logging;
+using Rocket.API;
+using Rocket.Unturned.Commands;
+using Rocket.Unturned.Player;
 using SDG;
 using UnityEngine;
 using unturned.ROCKS.Uconomy;

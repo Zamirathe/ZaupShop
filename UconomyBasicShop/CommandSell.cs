@@ -1,5 +1,7 @@
 ﻿using System;
-using Rocket.RocketAPI;
+using Rocket.API;
+using Rocket.Unturned.Commands;
+using Rocket.Unturned.Player;
 
 namespace UconomyBasicShop
 {

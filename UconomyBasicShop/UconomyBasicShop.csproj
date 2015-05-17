@@ -48,9 +48,14 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\UnturnedServer\Servers\testing13\Rocket\Libraries\MySql.Data.dll</HintPath>
     </Reference>
-    <Reference Include="RocketAPI, Version=3.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\steamcmd\unturnedtesting13\Unturned_Data\Managed\RocketAPI.dll</HintPath>
+    <Reference Include="Rocket.API">
+      <HintPath>..\..\..\..\..\..\..\steamcmd\unturnedtesting13\Unturned_Data\Managed\Rocket.API.dll</HintPath>
+    </Reference>
+    <Reference Include="Rocket.Core">
+      <HintPath>..\..\..\..\..\..\..\steamcmd\unturnedtesting13\Unturned_Data\Managed\Rocket.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Rocket.Unturned">
+      <HintPath>..\..\..\..\..\..\..\steamcmd\unturnedtesting13\Unturned_Data\Managed\Rocket.Unturned.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
