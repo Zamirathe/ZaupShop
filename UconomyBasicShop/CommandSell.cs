@@ -28,6 +28,13 @@ namespace UconomyBasicShop
                 return "Allows you to sell items to the shop from your inventory.";
             }
         }
+        public string Syntax
+        {
+            get
+            {
+                return "<name or id> [amount]";
+            }
+        }
 
         public void Execute(RocketPlayer playerid, string[] msg)
         {

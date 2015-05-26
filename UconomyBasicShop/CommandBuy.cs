@@ -28,6 +28,13 @@ namespace UconomyBasicShop
                 return "Allows you to buy items from the shop.";
             }
         }
+        public string Syntax
+        {
+            get
+            {
+                return "[v.]<name or id> [amount] [25 | 50 | 75 | 100]";
+            }
+        }
 
         public void Execute(RocketPlayer playerid, string[] msg)
         {

@@ -32,6 +32,13 @@ namespace UconomyBasicShop
                 return "Tells you the cost of a selected item.";
             }
         }
+        public string Syntax
+        {
+            get
+            {
+                return "[v.]<name or id>";
+            }
+        }
 
         public void Execute(RocketPlayer playerid, string[] msg)
         {

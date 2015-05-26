@@ -34,6 +34,13 @@ namespace UconomyBasicShop
                 return "Allows admins to change, add, or remove items/vehicles from the shop.";
             }
         }
+        public string Syntax
+        {
+            get
+            {
+                return "<add | rem | chng | buy> [v.]<itemid> <cost>";
+            }
+        }
 
         public void Execute(RocketPlayer playerid, string[] msg)
         {
