@@ -327,7 +327,7 @@ namespace UconomyBasicShop
                         RocketChat.Say(playerid, message);
                         return;
                     }
-                    playerid.GiveItem(id, amttobuy, false);
+                    playerid.GiveItem(id, amttobuy);
                     newbal = Uconomy.Instance.Database.IncreaseBalance(playerid.CSteamID, (cost * -1));
                     message = UconomyBasicShop.Instance.Translate("item_buy_msg", new object[] {name, cost, Uconomy.Instance.Configuration.MoneyName, newbal, Uconomy.Instance.Configuration.MoneyName, amttobuy});
                     if (UconomyBasicShop.Instance.OnShopBuy != null)
