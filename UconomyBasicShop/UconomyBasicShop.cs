@@ -4,6 +4,7 @@ using Rocket.API;
 using Rocket.Unturned;
 using Rocket.Unturned.Player;
 using Rocket.Unturned.Plugins;
+using Rocket.Unturned.Logging;
 using SDG;
 using UnityEngine;
 using unturned.ROCKS.Uconomy;
@@ -484,7 +485,7 @@ namespace UconomyBasicShop
             // Get how many they have
             if (playerid.Inventory.has(id) == null)
             {
-                message = UconomyBasicShop.Instance.Translate("no_have_item_sell", new object[] {name});
+                message = UconomyBasicShop.Instance.Translate("not_have_item_sell", new object[] {name});
                 RocketChat.Say(playerid, message);
                 return;
             }
