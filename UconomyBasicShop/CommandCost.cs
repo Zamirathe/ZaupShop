@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Rocket.API;
 using Rocket.Unturned.Commands;
 using Rocket.Unturned.Player;
@@ -38,6 +39,10 @@ namespace UconomyBasicShop
             {
                 return "[v.]<name or id>";
             }
+        }
+        public List<string> Aliases
+        {
+            get { return new List<string>(); }
         }
 
         public void Execute(RocketPlayer playerid, string[] msg)

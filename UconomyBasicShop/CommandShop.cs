@@ -41,6 +41,10 @@ namespace UconomyBasicShop
                 return "<add | rem | chng | buy> [v.]<itemid> <cost>";
             }
         }
+        public List<string> Aliases
+        {
+            get { return new List<string>(); }
+        }
 
         public void Execute(RocketPlayer playerid, string[] msg)
         {
