@@ -93,9 +93,9 @@
     <Compile Include="CommandSell.cs" />
     <Compile Include="CommandShop.cs" />
     <Compile Include="DatabaseMgr.cs" />
-    <Compile Include="UconomyBasicShop.cs" />
+    <Compile Include="ZaupShop.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UconomyBasicShopConfiguration.cs" />
+    <Compile Include="ZaupShopConfiguration.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Libraries\I18N.dll">
