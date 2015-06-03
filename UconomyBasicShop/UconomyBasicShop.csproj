@@ -42,17 +42,17 @@
     </Reference>
     <Reference Include="I18N, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Uconomy_Extension\Uconomy_Extension\Libraries\I18N.dll</HintPath>
+      <HintPath>Libraries\I18N.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="I18N.West, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Uconomy_Extension\Uconomy_Extension\Libraries\I18N.West.dll</HintPath>
+      <HintPath>Libraries\I18N.West.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="MySql.Data, Version=6.9.5.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Uconomy_Extension\Uconomy_Extension\Libraries\MySql.Data.dll</HintPath>
+      <HintPath>Libraries\MySql.Data.dll</HintPath>
     </Reference>
     <Reference Include="Rocket.API, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
