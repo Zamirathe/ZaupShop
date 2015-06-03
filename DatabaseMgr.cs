@@ -5,7 +5,7 @@ using Rocket.API;
 using System;
 using unturned.ROCKS.Uconomy;
 
-namespace UconomyBasicShop
+namespace ZaupShop
 {
     public class DatabaseMgr
     {
@@ -23,11 +23,11 @@ namespace UconomyBasicShop
             {
                 MySqlConnection mySqlConnection = this.createConnection();
                 MySqlCommand mySqlCommand = mySqlConnection.CreateCommand();
-                mySqlCommand.CommandText = string.Concat("show tables like '", UconomyBasicShop.Instance.Configuration.ItemShopTableName, "'");
+                mySqlCommand.CommandText = string.Concat("show tables like '", ZaupShop.Instance.Configuration.ItemShopTableName, "'");
                 mySqlConnection.Open();
                 if (mySqlCommand.ExecuteScalar() == null)
                 {
-                    mySqlCommand.CommandText = string.Concat("CREATE TABLE `", UconomyBasicShop.Instance.Configuration.ItemShopTableName, "` (`id` int(6) NOT NULL,`itemname` varchar(32) NOT NULL,`cost` decimal(15,2) NOT NULL DEFAULT '20.00',`buyback` decimal(15,2) NOT NULL DEFAULT '0.00',PRIMARY KEY (`id`)) ");
+                    mySqlCommand.CommandText = string.Concat("CREATE TABLE `", ZaupShop.Instance.Configuration.ItemShopTableName, "` (`id` int(6) NOT NULL,`itemname` varchar(32) NOT NULL,`cost` decimal(15,2) NOT NULL DEFAULT '20.00',`buyback` decimal(15,2) NOT NULL DEFAULT '0.00',PRIMARY KEY (`id`)) ");
                     mySqlCommand.ExecuteNonQuery();
                 }
                 mySqlConnection.Close();
@@ -40,11 +40,11 @@ namespace UconomyBasicShop
             {
                 MySqlConnection mySqlConnection = this.createConnection();
                 MySqlCommand mySqlCommand = mySqlConnection.CreateCommand();
-                mySqlCommand.CommandText = string.Concat("show tables like '", UconomyBasicShop.Instance.Configuration.VehicleShopTableName, "'");
+                mySqlCommand.CommandText = string.Concat("show tables like '", ZaupShop.Instance.Configuration.VehicleShopTableName, "'");
                 mySqlConnection.Open();
                 if (mySqlCommand.ExecuteScalar() == null)
                 {
-                    mySqlCommand.CommandText = string.Concat("CREATE TABLE `", UconomyBasicShop.Instance.Configuration.VehicleShopTableName, "` (`id` int(6) NOT NULL,`vehiclename` varchar(32) NOT NULL,`cost` decimal(15,2) NOT NULL DEFAULT '100.00',PRIMARY KEY (`id`)) ");
+                    mySqlCommand.CommandText = string.Concat("CREATE TABLE `", ZaupShop.Instance.Configuration.VehicleShopTableName, "` (`id` int(6) NOT NULL,`vehiclename` varchar(32) NOT NULL,`cost` decimal(15,2) NOT NULL DEFAULT '100.00',PRIMARY KEY (`id`)) ");
                     mySqlCommand.ExecuteNonQuery();
                 }
                 mySqlConnection.Close();
@@ -57,11 +57,11 @@ namespace UconomyBasicShop
             {
                 MySqlConnection mySqlConnection = this.createConnection();
                 MySqlCommand mySqlCommand = mySqlConnection.CreateCommand();
-                mySqlCommand.CommandText = string.Concat("show columns from `", UconomyBasicShop.Instance.Configuration.ItemShopTableName, "` like 'buyback'");
+                mySqlCommand.CommandText = string.Concat("show columns from `", ZaupShop.Instance.Configuration.ItemShopTableName, "` like 'buyback'");
                 mySqlConnection.Open();
                 if (mySqlCommand.ExecuteScalar() == null)
                 {
-                    mySqlCommand.CommandText = string.Concat("ALTER TABLE `", UconomyBasicShop.Instance.Configuration.ItemShopTableName, "` ADD `buyback` decimal(15,2) NOT NULL DEFAULT '0.00'");
+                    mySqlCommand.CommandText = string.Concat("ALTER TABLE `", ZaupShop.Instance.Configuration.ItemShopTableName, "` ADD `buyback` decimal(15,2) NOT NULL DEFAULT '0.00'");
                     mySqlCommand.ExecuteNonQuery();
                 }
                 mySqlConnection.Close();
@@ -106,7 +106,7 @@ namespace UconomyBasicShop
                     mySqlCommand.CommandText = string.Concat(
                         new string[] { 
                             "Insert into `", 
-                            UconomyBasicShop.Instance.Configuration.ItemShopTableName, 
+                            ZaupShop.Instance.Configuration.ItemShopTableName, 
                             "` (`id`, `itemname`, `cost`) VALUES ('",
                             id.ToString(),
                             "', '",
@@ -121,7 +121,7 @@ namespace UconomyBasicShop
                     mySqlCommand.CommandText = string.Concat(
                         new string[] { 
                             "update `",
-                            UconomyBasicShop.Instance.Configuration.ItemShopTableName,
+                            ZaupShop.Instance.Configuration.ItemShopTableName,
                             "` set itemname='",
                             name,
                             "', cost='",
@@ -161,7 +161,7 @@ namespace UconomyBasicShop
                     mySqlCommand.CommandText = string.Concat(
                         new string[] { 
                             "Insert into `",
-                            UconomyBasicShop.Instance.Configuration.VehicleShopTableName,
+                            ZaupShop.Instance.Configuration.VehicleShopTableName,
                             "` (`id`, `vehiclename`, `cost`) VALUES ('",
                             id.ToString(),
                             "', '",
@@ -176,7 +176,7 @@ namespace UconomyBasicShop
                     mySqlCommand.CommandText = string.Concat(
                         new string[] { 
                             "update `",
-                            UconomyBasicShop.Instance.Configuration.VehicleShopTableName,
+                            ZaupShop.Instance.Configuration.VehicleShopTableName,
                             "` set vehiclename='",
                             name,
                             "', cost='",
@@ -214,7 +214,7 @@ namespace UconomyBasicShop
                 MySqlCommand mySqlCommand = mySqlConnection.CreateCommand();
                 mySqlCommand.CommandText = string.Concat(new string[] { 
                     "select `cost` from `",
-                    UconomyBasicShop.Instance.Configuration.ItemShopTableName,
+                    ZaupShop.Instance.Configuration.ItemShopTableName,
                     "` where `id` = '",
                     id.ToString(),
                     "';" 
@@ -243,7 +243,7 @@ namespace UconomyBasicShop
                 MySqlCommand mySqlCommand = mySqlConnection.CreateCommand();
                 mySqlCommand.CommandText = string.Concat(new string[] { 
                     "select `cost` from `",
-                    UconomyBasicShop.Instance.Configuration.VehicleShopTableName, 
+                    ZaupShop.Instance.Configuration.VehicleShopTableName, 
                     "` where `id` = '", 
                     id.ToString(), 
                     "';" 
@@ -272,7 +272,7 @@ namespace UconomyBasicShop
                 mySqlCommand.CommandText = string.Concat(
                     new string[] { 
                         "delete from `",
-                        UconomyBasicShop.Instance.Configuration.ItemShopTableName, 
+                        ZaupShop.Instance.Configuration.ItemShopTableName, 
                         "` where id='", 
                         id.ToString(), 
                         "';" 
@@ -305,7 +305,7 @@ namespace UconomyBasicShop
                 mySqlCommand.CommandText = string.Concat(
                     new string[] { 
                         "delete from `", 
-                        UconomyBasicShop.Instance.Configuration.VehicleShopTableName,
+                        ZaupShop.Instance.Configuration.VehicleShopTableName,
                         "` where id='", 
                         id.ToString(), 
                         "';" 
@@ -338,7 +338,7 @@ namespace UconomyBasicShop
                 mySqlCommand.CommandText = string.Concat(
                     new string[] { 
                         "update `", 
-                        UconomyBasicShop.Instance.Configuration.ItemShopTableName,
+                        ZaupShop.Instance.Configuration.ItemShopTableName,
                         "` set `buyback`='",
                         cost.ToString(), 
                         "' where id='", 
@@ -373,7 +373,7 @@ namespace UconomyBasicShop
                 MySqlCommand mySqlCommand = mySqlConnection.CreateCommand();
                 mySqlCommand.CommandText = string.Concat(new string[] { 
                     "select `buyback` from `",
-                    UconomyBasicShop.Instance.Configuration.ItemShopTableName,
+                    ZaupShop.Instance.Configuration.ItemShopTableName,
                     "` where `id` = '",
                     id.ToString(),
                     "';" 

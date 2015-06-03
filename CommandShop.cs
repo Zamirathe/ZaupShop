@@ -9,7 +9,7 @@ using SDG;
 using UnityEngine;
 using Steamworks;
 
-namespace UconomyBasicShop
+namespace ZaupShop
 {
     public class CommandShop : IRocketCommand
     {
@@ -105,20 +105,20 @@ namespace UconomyBasicShop
             }
             if (msg.Length == 0)
             {
-                message = UconomyBasicShop.Instance.Translate("shop_command_usage", new object[] {});
+                message = ZaupShop.Instance.Translate("shop_command_usage", new object[] {});
                 // We are going to print how to use
                 this.sendMessage(playerid, message, console);
                 return;
             }
             if (msg.Length < 2)
             {
-                message = UconomyBasicShop.Instance.Translate("no_itemid_given", new object[] {});
+                message = ZaupShop.Instance.Translate("no_itemid_given", new object[] {});
                 this.sendMessage(playerid, message, console);
                 return;
             }
             if (msg.Length == 2 && msg[0] != "rem")
             {
-                message = UconomyBasicShop.Instance.Translate("no_cost_given", new object[] { });
+                message = ZaupShop.Instance.Translate("no_cost_given", new object[] { });
                 this.sendMessage(playerid, message, console);
                 return;
             }
@@ -127,7 +127,7 @@ namespace UconomyBasicShop
                 string[] type = Parser.getComponentsFromSerial(msg[1], '.');
                 if (type.Length > 1 && type[0] != "v")
                 {
-                    message = UconomyBasicShop.Instance.Translate("v_not_provided", new object[] { });
+                    message = ZaupShop.Instance.Translate("v_not_provided", new object[] { });
                     this.sendMessage(playerid, message, console);
                     return;
                 }
@@ -135,14 +135,14 @@ namespace UconomyBasicShop
                 if (type.Length > 1)
                 {
                     if (!ushort.TryParse(type[1], out id)) {
-                        message = UconomyBasicShop.Instance.Translate("invalid_id_given", new object[] { });
+                        message = ZaupShop.Instance.Translate("invalid_id_given", new object[] { });
                         this.sendMessage(playerid, message, console);
                         return;
                     }
                 } else {
                     if (!ushort.TryParse(type[0], out id))
                     {
-                        message = UconomyBasicShop.Instance.Translate("invalid_id_given", new object[] { });
+                        message = ZaupShop.Instance.Translate("invalid_id_given", new object[] { });
                         this.sendMessage(playerid, message, console);
                         return;
                     }
@@ -156,7 +156,7 @@ namespace UconomyBasicShop
                     case "chng":
                         if (!perms[3] && !perms[0])
                         {
-                            message = UconomyBasicShop.Instance.Translate("no_permission_shop_chng", new object[] { });
+                            message = ZaupShop.Instance.Translate("no_permission_shop_chng", new object[] { });
                             this.sendMessage(playerid, message, console);
                             return;
                         }
@@ -168,39 +168,39 @@ namespace UconomyBasicShop
                         {
                             if (!perms[1] && !perms[0])
                             {
-                                message = UconomyBasicShop.Instance.Translate("no_permission_shop_add", new object[] { });
+                                message = ZaupShop.Instance.Translate("no_permission_shop_add", new object[] { });
                                 this.sendMessage(playerid, message, console);
                                 return;
                             }
                         }
-                        string ac = (pass) ? UconomyBasicShop.Instance.Translate("changed", new object[] { }) : UconomyBasicShop.Instance.Translate("added", new object[] { });
+                        string ac = (pass) ? ZaupShop.Instance.Translate("changed", new object[] { }) : ZaupShop.Instance.Translate("added", new object[] { });
                         switch (type[0])
                         {
                             case "v":
                                 VehicleAsset va = (VehicleAsset)Assets.find(EAssetType.Vehicle, id);
-                                message = UconomyBasicShop.Instance.Translate("changed_or_added_to_shop", new object[] { 
+                                message = ZaupShop.Instance.Translate("changed_or_added_to_shop", new object[] { 
                                     ac,
                                     va.Name,
                                     msg[2]
                                 });
-                                success = UconomyBasicShop.Instance.ShopDB.AddVehicle((int)id, va.Name, decimal.Parse(msg[2]), change);
+                                success = ZaupShop.Instance.ShopDB.AddVehicle((int)id, va.Name, decimal.Parse(msg[2]), change);
                                 if (!success)
                                 {
-                                    message = UconomyBasicShop.Instance.Translate("error_adding_or_changing", new object[] { va.Name });
+                                    message = ZaupShop.Instance.Translate("error_adding_or_changing", new object[] { va.Name });
                                 }
                                 this.sendMessage(playerid, message, console);
                                 break;
                             default:
                                 ItemAsset ia = (ItemAsset)Assets.find(EAssetType.Item, id);
-                                message = UconomyBasicShop.Instance.Translate("changed_or_added_to_shop", new object[] { 
+                                message = ZaupShop.Instance.Translate("changed_or_added_to_shop", new object[] { 
                                     ac,
                                     ia.Name,
                                     msg[2]
                                 });
-                                success = UconomyBasicShop.Instance.ShopDB.AddItem((int)id, ia.Name, decimal.Parse(msg[2]), change);
+                                success = ZaupShop.Instance.ShopDB.AddItem((int)id, ia.Name, decimal.Parse(msg[2]), change);
                                 if (!success)
                                 {
-                                    message = UconomyBasicShop.Instance.Translate("error_adding_or_changing", new object[] { ia.Name });
+                                    message = ZaupShop.Instance.Translate("error_adding_or_changing", new object[] { ia.Name });
                                 }
                                 this.sendMessage(playerid, message, console);
                                 break;
@@ -209,7 +209,7 @@ namespace UconomyBasicShop
                     case "rem":
                         if (!perms[2] && !perms[0])
                         {
-                            message = UconomyBasicShop.Instance.Translate("no_permission_shop_rem", new object[] { });
+                            message = ZaupShop.Instance.Translate("no_permission_shop_rem", new object[] { });
                             this.sendMessage(playerid, message, console);
                             return;
                         }
@@ -217,21 +217,21 @@ namespace UconomyBasicShop
                         {
                             case "v":
                                 VehicleAsset va = (VehicleAsset)Assets.find(EAssetType.Vehicle, id);
-                                message = UconomyBasicShop.Instance.Translate("removed_from_shop", new object[] { va.Name });
-                                success = UconomyBasicShop.Instance.ShopDB.DeleteVehicle((int)id);
+                                message = ZaupShop.Instance.Translate("removed_from_shop", new object[] { va.Name });
+                                success = ZaupShop.Instance.ShopDB.DeleteVehicle((int)id);
                                 if (!success)
                                 {
-                                    message = UconomyBasicShop.Instance.Translate("not_in_shop_to_remove", new object[] { va.Name });
+                                    message = ZaupShop.Instance.Translate("not_in_shop_to_remove", new object[] { va.Name });
                                 }
                                 this.sendMessage(playerid, message, console);
                                 break;
                             default:
                                 ItemAsset ia = (ItemAsset)Assets.find(EAssetType.Item, id);
-                                message = UconomyBasicShop.Instance.Translate("removed_from_shop", new object[] { ia.Name });
-                                success = UconomyBasicShop.Instance.ShopDB.DeleteItem((int)id);
+                                message = ZaupShop.Instance.Translate("removed_from_shop", new object[] { ia.Name });
+                                success = ZaupShop.Instance.ShopDB.DeleteItem((int)id);
                                 if (!success)
                                 {
-                                    message = UconomyBasicShop.Instance.Translate("not_in_shop_to_remove", new object[] { ia.Name });
+                                    message = ZaupShop.Instance.Translate("not_in_shop_to_remove", new object[] { ia.Name });
                                 }
                                 this.sendMessage(playerid, message, console);
                                 break;
@@ -240,27 +240,27 @@ namespace UconomyBasicShop
                     case "buy":
                         if (!perms[4] && !perms[0])
                         {
-                            message = UconomyBasicShop.Instance.Translate("no_permission_shop_buy", new object[] { });
+                            message = ZaupShop.Instance.Translate("no_permission_shop_buy", new object[] { });
                             this.sendMessage(playerid, message, console);
                             return;
                         }
                         ItemAsset iab = (ItemAsset)Assets.find(EAssetType.Item, id);
                         decimal buyb;
                         decimal.TryParse(msg[2], out buyb);
-                        message = UconomyBasicShop.Instance.Translate("set_buyback_price", new object[] {
+                        message = ZaupShop.Instance.Translate("set_buyback_price", new object[] {
                             iab.Name,
                             buyb.ToString()
                         });
-                        success = UconomyBasicShop.Instance.ShopDB.SetBuyPrice((int)id, buyb);
+                        success = ZaupShop.Instance.ShopDB.SetBuyPrice((int)id, buyb);
                         if (!success)
                         {
-                            message = UconomyBasicShop.Instance.Translate("not_in_shop_to_buyback", new object[] { iab.Name });
+                            message = ZaupShop.Instance.Translate("not_in_shop_to_buyback", new object[] { iab.Name });
                         }
                         this.sendMessage(playerid, message, console);
                         break;
                     default:
                         // We shouldn't get this, but if we do send an error.
-                        message = UconomyBasicShop.Instance.Translate("not_in_shop_to_remove", new object[] { });;
+                        message = ZaupShop.Instance.Translate("not_in_shop_to_remove", new object[] { });;
                         this.sendMessage(playerid, message, console);
                         return;
                 }

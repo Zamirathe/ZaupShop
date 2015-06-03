@@ -3,10 +3,14 @@ using System.Collections.Generic;
 using Rocket.API;
 using Rocket.Unturned.Commands;
 using Rocket.Unturned.Player;
+using SDG;
+using UnityEngine;
+using unturned.ROCKS.Uconomy;
+using Steamworks;
 
-namespace UconomyBasicShop
+namespace ZaupShop
 {
-    public class CommandSell : IRocketCommand
+    public class CommandCost : IRocketCommand
     {
         public bool RunFromConsole
         {
@@ -19,21 +23,21 @@ namespace UconomyBasicShop
         {
             get
             {
-                return "sell";
+                return "cost";
             }
         }
         public string Help
         {
             get
             {
-                return "Allows you to sell items to the shop from your inventory.";
+                return "Tells you the cost of a selected item.";
             }
         }
         public string Syntax
         {
             get
             {
-                return "<name or id> [amount]";
+                return "[v.]<name or id>";
             }
         }
         public List<string> Aliases
@@ -43,7 +47,7 @@ namespace UconomyBasicShop
 
         public void Execute(RocketPlayer playerid, string[] msg)
         {
-            UconomyBasicShop.Instance.Sell(playerid, msg);
+            ZaupShop.Instance.Cost(playerid, msg);
         }
     }
 }

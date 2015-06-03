@@ -7,7 +7,7 @@
     <ProjectGuid>{ABF4C55C-D1AC-4A28-A08F-8A99042990BD}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>UconomyBasicShop</RootNamespace>
+    <RootNamespace>ZaupShop</RootNamespace>
     <AssemblyName>ZaupShop</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

@@ -4,9 +4,9 @@ using Rocket.API;
 using Rocket.Unturned.Commands;
 using Rocket.Unturned.Player;
 
-namespace UconomyBasicShop
+namespace ZaupShop
 {
-    public class CommandBuy : IRocketCommand
+    public class CommandSell : IRocketCommand
     {
         public bool RunFromConsole
         {
@@ -19,21 +19,21 @@ namespace UconomyBasicShop
         {
             get
             {
-                return "buy";
+                return "sell";
             }
         }
         public string Help
         {
             get
             {
-                return "Allows you to buy items from the shop.";
+                return "Allows you to sell items to the shop from your inventory.";
             }
         }
         public string Syntax
         {
             get
             {
-                return "[v.]<name or id> [amount] [25 | 50 | 75 | 100]";
+                return "<name or id> [amount]";
             }
         }
         public List<string> Aliases
@@ -43,7 +43,7 @@ namespace UconomyBasicShop
 
         public void Execute(RocketPlayer playerid, string[] msg)
         {
-            UconomyBasicShop.Instance.Buy(playerid, msg);
+            ZaupShop.Instance.Sell(playerid, msg);
         }
     }
 }

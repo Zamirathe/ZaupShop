@@ -1,9 +1,9 @@
 ﻿using System;
 using Rocket.API;
 
-namespace UconomyBasicShop
+namespace ZaupShop
 {
-    public class UconomyBasicShopConfiguration : IRocketPluginConfiguration
+    public class ZaupShopConfiguration : IRocketPluginConfiguration
     {
         public string ItemShopTableName;
         public string VehicleShopTableName;
@@ -16,7 +16,7 @@ namespace UconomyBasicShop
         {
             get
             {
-                return new UconomyBasicShopConfiguration
+                return new ZaupShopConfiguration
                 {
                     ItemShopTableName = "uconomyitemshop",
                     VehicleShopTableName = "uconomyvehicleshop",
