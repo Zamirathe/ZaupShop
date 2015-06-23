@@ -5,7 +5,7 @@ using Rocket.Unturned;
 using Rocket.Unturned.Commands;
 using Rocket.Unturned.Logging;
 using Rocket.Unturned.Player;
-using SDG;
+using SDG.Unturned;
 using UnityEngine;
 using Steamworks;
 
