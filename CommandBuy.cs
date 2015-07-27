@@ -8,7 +8,7 @@ namespace ZaupShop
 {
     public class CommandBuy : IRocketCommand
     {
-        public bool RunFromConsole
+        public bool AllowFromConsole
         {
             get
             {
@@ -40,10 +40,13 @@ namespace ZaupShop
         {
             get { return new List<string>(); }
         }
-
-        public void Execute(RocketPlayer playerid, string[] msg)
+        public List<string> Permissions
         {
-            ZaupShop.Instance.Buy(playerid, msg);
+            get { return new List<string>(); }
+        }
+        public void Execute(IRocketPlayer playerid, string[] msg)
+        {
+            ZaupShop.Instance.Buy((UnturnedPlayer)playerid, msg);
         }
     }
 }

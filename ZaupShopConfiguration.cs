@@ -12,20 +12,14 @@ namespace ZaupShop
         public bool CanSellItems;
         public bool QualityCounts;
 
-        public IRocketPluginConfiguration DefaultConfiguration
+        public ZaupShopConfiguration()
         {
-            get
-            {
-                return new ZaupShopConfiguration
-                {
-                    ItemShopTableName = "uconomyitemshop",
-                    VehicleShopTableName = "uconomyvehicleshop",
-                    CanBuyItems = true,
-                    CanBuyVehicles = false,
-                    CanSellItems = true,
-                    QualityCounts = true
-                };
-            }
+            ItemShopTableName = "uconomyitemshop";
+            VehicleShopTableName = "uconomyvehicleshop";
+            CanBuyItems = true;
+            CanBuyVehicles = false;
+            CanSellItems = true;
+            QualityCounts = true;
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+
 using Rocket.API;
 using Rocket.Unturned.Commands;
 using Rocket.Unturned.Player;
@@ -12,7 +13,7 @@ namespace ZaupShop
 {
     public class CommandCost : IRocketCommand
     {
-        public bool RunFromConsole
+        public bool AllowFromConsole
         {
             get
             {
@@ -44,10 +45,13 @@ namespace ZaupShop
         {
             get { return new List<string>(); }
         }
-
-        public void Execute(RocketPlayer playerid, string[] msg)
+        public List<string> Permissions
         {
-            ZaupShop.Instance.Cost(playerid, msg);
+            get { return new List<string>(); }
+        }
+        public void Execute(IRocketPlayer playerid, string[] msg)
+        {
+            ZaupShop.Instance.Cost((UnturnedPlayer)playerid, msg);
         }
     }
 }

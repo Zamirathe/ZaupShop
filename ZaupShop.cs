@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+
 using Rocket.API;
+using Rocket.API.Collections;
+using Rocket.Core.Logging;
+using Rocket.Core.Plugins;
 using Rocket.Unturned;
+using Rocket.Unturned.Chat;
 using Rocket.Unturned.Player;
 using Rocket.Unturned.Plugins;
-using Rocket.Unturned.Logging;
 using SDG.Unturned;
 using UnityEngine;
 using unturned.ROCKS.Uconomy;
@@ -16,11 +20,11 @@ namespace ZaupShop
     {
         public DatabaseMgr ShopDB;
         public static ZaupShop Instance;
-        public override Dictionary<string, string> DefaultTranslations
+        public override TranslationList DefaultTranslations
         {
             get
             {
-                return new Dictionary<string, string>
+                return new TranslationList
                 {
                     {
                         "buy_command_usage",
@@ -188,19 +192,19 @@ namespace ZaupShop
             this.ShopDB = new DatabaseMgr();
         }
 
-        public delegate void PlayerShopBuy(RocketPlayer player, decimal amt, byte items, ushort item, string type="item");
+        public delegate void PlayerShopBuy(UnturnedPlayer player, decimal amt, byte items, ushort item, string type="item");
         public event PlayerShopBuy OnShopBuy;
-        public delegate void PlayerShopSell(RocketPlayer player, decimal amt, byte items, ushort item);
+        public delegate void PlayerShopSell(UnturnedPlayer player, decimal amt, byte items, ushort item);
         public event PlayerShopSell OnShopSell;
 
-        public void Buy(RocketPlayer playerid, string[] components0)
+        public void Buy(UnturnedPlayer playerid, string[] components0)
         {
             string message;
             if (components0.Length == 0)
             {
                 message = ZaupShop.Instance.Translate("buy_command_usage", new object[] {});
                 // We are going to print how to use
-                RocketChat.Say(playerid, message);
+                UnturnedChat.Say(playerid, message);
                 return;
             }
             byte amttobuy = 1;
@@ -213,23 +217,23 @@ namespace ZaupShop
             {
                 message = ZaupShop.Instance.Translate("buy_command_usage", new object[] { });
                 // We are going to print how to use
-                RocketChat.Say(playerid, message);
+                UnturnedChat.Say(playerid, message);
                 return;
             }
             ushort id;
             switch (components[0])
             {
                 case "v":
-                    if (!ZaupShop.Instance.Configuration.CanBuyVehicles)
+                    if (!ZaupShop.Instance.Configuration.Instance.CanBuyVehicles)
                     {
                         message = ZaupShop.Instance.Translate("buy_vehicles_off", new object[] { });
-                        RocketChat.Say(playerid, message);
+                        UnturnedChat.Say(playerid, message);
                         return;
                     }
                     string name = "";
                     if (!ushort.TryParse(components[1], out id))
                     {
-                        Asset[] array = Assets.find(EAssetType.Vehicle);
+                        Asset[] array = Assets.find(EAssetType.VEHICLE);
                         Asset[] array2 = array;
                         for (int i = 0; i < array2.Length; i++)
                         {
@@ -246,51 +250,51 @@ namespace ZaupShop
                     {
                         message = ZaupShop.Instance.Translate("could_not_find", new object[] {
                             components[1]});
-                        RocketChat.Say(playerid, message);
+                        UnturnedChat.Say(playerid, message);
                         return;
                     }
                     else if (name == null && id != 0)
                     {
-                        name = ((VehicleAsset)Assets.find(EAssetType.Vehicle, id)).Name;
+                        name = ((VehicleAsset)Assets.find(EAssetType.VEHICLE, id)).Name;
                     }
                     decimal cost = ZaupShop.Instance.ShopDB.GetVehicleCost(id);
-                    decimal balance = Uconomy.Instance.Database.GetBalance(playerid.CSteamID);
+                    decimal balance = Uconomy.Instance.Database.GetBalance(playerid.CSteamID.ToString());
                     if (cost <= 0m)
                     {
                         message = ZaupShop.Instance.Translate("vehicle_not_available", new object[] {name});
-                        RocketChat.Say(playerid, message);
+                        UnturnedChat.Say(playerid, message);
                         return;
                     }
                     if (balance < cost)
                     {
-                        message = ZaupShop.Instance.Translate("not_enough_currency_msg", new object[] {Uconomy.Instance.Configuration.MoneyName, name});
-                        RocketChat.Say(playerid, message);
+                        message = ZaupShop.Instance.Translate("not_enough_currency_msg", new object[] {Uconomy.Instance.Configuration.Instance.MoneyName, name});
+                        UnturnedChat.Say(playerid, message);
                         return;
                     }
                     if (!playerid.GiveVehicle(id))
                     {
                         message = ZaupShop.Instance.Translate("error_giving_item", new object[] { name });
-                        RocketChat.Say(playerid, message);
+                        UnturnedChat.Say(playerid, message);
                         return;
                     }
-                    decimal newbal = Uconomy.Instance.Database.IncreaseBalance(playerid.CSteamID, (cost * -1));
-                    message = ZaupShop.Instance.Translate("vehicle_buy_msg", new object[] {name, cost, Uconomy.Instance.Configuration.MoneyName, newbal, Uconomy.Instance.Configuration.MoneyName});
+                    decimal newbal = Uconomy.Instance.Database.IncreaseBalance(playerid.CSteamID.ToString(), (cost * -1));
+                    message = ZaupShop.Instance.Translate("vehicle_buy_msg", new object[] {name, cost, Uconomy.Instance.Configuration.Instance.MoneyName, newbal, Uconomy.Instance.Configuration.Instance.MoneyName});
                     if (ZaupShop.Instance.OnShopBuy != null)
                         ZaupShop.Instance.OnShopBuy(playerid, cost, 1, id, "vehicle");
                     playerid.Player.gameObject.SendMessage("ZaupShopOnBuy", new object[] { playerid, cost, amttobuy, id, "vehicle" }, SendMessageOptions.DontRequireReceiver);
-                    RocketChat.Say(playerid, message);
+                    UnturnedChat.Say(playerid, message);
                     break;
                 default:
-                    if (!ZaupShop.Instance.Configuration.CanBuyItems)
+                    if (!ZaupShop.Instance.Configuration.Instance.CanBuyItems)
                     {
                         message = ZaupShop.Instance.Translate("buy_items_off", new object[] { });
-                        RocketChat.Say(playerid, message);
+                        UnturnedChat.Say(playerid, message);
                         return;
                     }
                     name = null;
                     if (!ushort.TryParse(components[0], out id))
                     {
-                        Asset[] array = Assets.find(EAssetType.Item);
+                        Asset[] array = Assets.find(EAssetType.ITEM);
                         Asset[] array2 = array;
                         for (int i = 0; i < array2.Length; i++)
                         {
@@ -306,53 +310,53 @@ namespace ZaupShop
                     if (name == null && id == 0)
                     {
                         message = ZaupShop.Instance.Translate("could_not_find", new object[] {components[0]});
-                        RocketChat.Say(playerid, message);
+                        UnturnedChat.Say(playerid, message);
                         return;
 
                     }
                     else if (name == null && id != 0)
                     {
-                        name = ((ItemAsset)Assets.find(EAssetType.Item, id)).Name;
+                        name = ((ItemAsset)Assets.find(EAssetType.ITEM, id)).Name;
                     }
                     cost = decimal.Round(ZaupShop.Instance.ShopDB.GetItemCost(id) * amttobuy, 2);
-                    balance = Uconomy.Instance.Database.GetBalance(playerid.CSteamID);
+                    balance = Uconomy.Instance.Database.GetBalance(playerid.CSteamID.ToString());
                     if (cost <= 0m)
                     {
                         message = ZaupShop.Instance.Translate("item_not_available", new object[] {name});
-                        RocketChat.Say(playerid, message);
+                        UnturnedChat.Say(playerid, message);
                         return;
                     }
                     if (balance < cost)
                     {
-                        message = ZaupShop.Instance.Translate("not_enough_currency_msg", new object[] {Uconomy.Instance.Configuration.MoneyName, amttobuy, name});
-                        RocketChat.Say(playerid, message);
+                        message = ZaupShop.Instance.Translate("not_enough_currency_msg", new object[] {Uconomy.Instance.Configuration.Instance.MoneyName, amttobuy, name});
+                        UnturnedChat.Say(playerid, message);
                         return;
                     }
                     playerid.GiveItem(id, amttobuy);
-                    newbal = Uconomy.Instance.Database.IncreaseBalance(playerid.CSteamID, (cost * -1));
-                    message = ZaupShop.Instance.Translate("item_buy_msg", new object[] {name, cost, Uconomy.Instance.Configuration.MoneyName, newbal, Uconomy.Instance.Configuration.MoneyName, amttobuy});
+                    newbal = Uconomy.Instance.Database.IncreaseBalance(playerid.CSteamID.ToString(), (cost * -1));
+                    message = ZaupShop.Instance.Translate("item_buy_msg", new object[] {name, cost, Uconomy.Instance.Configuration.Instance.MoneyName, newbal, Uconomy.Instance.Configuration.Instance.MoneyName, amttobuy});
                     if (ZaupShop.Instance.OnShopBuy != null)
                         ZaupShop.Instance.OnShopBuy(playerid, cost, amttobuy, id);
                     playerid.Player.gameObject.SendMessage("ZaupShopOnBuy", new object[] { playerid, cost, amttobuy, id, "item" }, SendMessageOptions.DontRequireReceiver);
-                    RocketChat.Say(playerid, message);
+                    UnturnedChat.Say(playerid, message);
                     break;
             }
         }
-        public void Cost(RocketPlayer playerid, string[] components)
+        public void Cost(UnturnedPlayer playerid, string[] components)
         {
             string message;
             if (components.Length == 0)
             {
                 message = ZaupShop.Instance.Translate("cost_command_usage", new object[] { });
                 // We are going to print how to use
-                RocketChat.Say(playerid, message);
+                UnturnedChat.Say(playerid, message);
                 return;
             }
             if (components.Length == 2 && components[0] != "v")
             {
                 message = ZaupShop.Instance.Translate("cost_command_usage", new object[] { });
                 // We are going to print how to use
-                RocketChat.Say(playerid, message);
+                UnturnedChat.Say(playerid, message);
                 return;
             }
             ushort id;
@@ -362,7 +366,7 @@ namespace ZaupShop
                     string name = null;
                     if (!ushort.TryParse(components[1], out id))
                     {
-                        Asset[] array = Assets.find(EAssetType.Vehicle);
+                        Asset[] array = Assets.find(EAssetType.VEHICLE);
                         Asset[] array2 = array;
                         for (int i = 0; i < array2.Length; i++)
                         {
@@ -378,26 +382,26 @@ namespace ZaupShop
                     if (name == null && id == 0)
                     {
                         message = ZaupShop.Instance.Translate("could_not_find", new object[] {components[1]});
-                        RocketChat.Say(playerid, message);
+                        UnturnedChat.Say(playerid, message);
                         return;
                     }
                     else if (name == null && id != 0)
                     {
-                        name = ((VehicleAsset)Assets.find(EAssetType.Vehicle, id)).Name;
+                        name = ((VehicleAsset)Assets.find(EAssetType.VEHICLE, id)).Name;
                     }
                     decimal cost = ZaupShop.Instance.ShopDB.GetVehicleCost(id);
-                    message = ZaupShop.Instance.Translate("vehicle_cost_msg", new object[] {name, cost.ToString(), Uconomy.Instance.Configuration.MoneyName});
+                    message = ZaupShop.Instance.Translate("vehicle_cost_msg", new object[] {name, cost.ToString(), Uconomy.Instance.Configuration.Instance.MoneyName});
                     if (cost <= 0m)
                     {
                         message = ZaupShop.Instance.Translate("error_getting_cost", new object[] {name});
                     }
-                    RocketChat.Say(playerid, message);
+                    UnturnedChat.Say(playerid, message);
                     break;
                 default:
                     name = null;
                     if (!ushort.TryParse(components[0], out id))
                     {
-                        Asset[] array = Assets.find(EAssetType.Item);
+                        Asset[] array = Assets.find(EAssetType.ITEM);
                         Asset[] array2 = array;
                         for (int i = 0; i < array2.Length; i++)
                         {
@@ -413,32 +417,32 @@ namespace ZaupShop
                     if (name == null && id == 0)
                     {
                         message = ZaupShop.Instance.Translate("could_not_find", new object[] {components[0]});
-                        RocketChat.Say(playerid, message);
+                        UnturnedChat.Say(playerid, message);
                         return;
                     }
                     else if (name == null && id != 0)
                     {
-                        name = ((ItemAsset)Assets.find(EAssetType.Item, id)).Name;
+                        name = ((ItemAsset)Assets.find(EAssetType.ITEM, id)).Name;
                     }
                     cost = ZaupShop.Instance.ShopDB.GetItemCost(id);
                     decimal bbp = ZaupShop.Instance.ShopDB.GetItemBuyPrice(id);
-                    message = ZaupShop.Instance.Translate("item_cost_msg", new object[] {name, cost.ToString(), Uconomy.Instance.Configuration.MoneyName, bbp.ToString(), Uconomy.Instance.Configuration.MoneyName});
+                    message = ZaupShop.Instance.Translate("item_cost_msg", new object[] {name, cost.ToString(), Uconomy.Instance.Configuration.Instance.MoneyName, bbp.ToString(), Uconomy.Instance.Configuration.Instance.MoneyName});
                     if (cost <= 0m)
                     {
                         message = ZaupShop.Instance.Translate("error_getting_cost", new object[] {name});
                     }
-                    RocketChat.Say(playerid, message);
+                    UnturnedChat.Say(playerid, message);
                     break;
             }
         }
-        public void Sell(RocketPlayer playerid, string[] components)
+        public void Sell(UnturnedPlayer playerid, string[] components)
         {
             string message;
             if (components.Length == 0)
             {
                 message = ZaupShop.Instance.Translate("sell_command_usage", new object[] { });
                 // We are going to print how to use
-                RocketChat.Say(playerid, message);
+                UnturnedChat.Say(playerid, message);
                 return;
             }
             byte amttosell = 1;
@@ -448,17 +452,17 @@ namespace ZaupShop
             }
             byte amt = amttosell;
             ushort id;
-            if (!ZaupShop.Instance.Configuration.CanSellItems)
+            if (!ZaupShop.Instance.Configuration.Instance.CanSellItems)
             {
                 message = ZaupShop.Instance.Translate("sell_items_off", new object[] { });
-                RocketChat.Say(playerid, message);
+                UnturnedChat.Say(playerid, message);
                 return;
             }
             string name = null;
             ItemAsset vAsset = null;
             if (!ushort.TryParse(components[0], out id))
             {
-                Asset[] array = Assets.find(EAssetType.Item);
+                Asset[] array = Assets.find(EAssetType.ITEM);
                 Asset[] array2 = array;
                 for (int i = 0; i < array2.Length; i++)
                 {
@@ -474,26 +478,26 @@ namespace ZaupShop
             if (name == null && id == 0)
             {
                 message = ZaupShop.Instance.Translate("could_not_find", new object[] {components[0]});
-                RocketChat.Say(playerid, message);
+                UnturnedChat.Say(playerid, message);
                 return;
             }
             else if (name == null && id != 0)
             {
-                vAsset = (ItemAsset)Assets.find(EAssetType.Item, id);
+                vAsset = (ItemAsset)Assets.find(EAssetType.ITEM, id);
                 name = vAsset.Name;
             }
             // Get how many they have
             if (playerid.Inventory.has(id) == null)
             {
                 message = ZaupShop.Instance.Translate("not_have_item_sell", new object[] {name});
-                RocketChat.Say(playerid, message);
+                UnturnedChat.Say(playerid, message);
                 return;
             }
             List<InventorySearch> list = playerid.Inventory.search(id, true, true);
             if (list.Count == 0 || (vAsset.Amount == 1 && list.Count < amttosell))
             {
                 message = ZaupShop.Instance.Translate("not_enough_items_sell", new object[] {amttosell.ToString(), name});
-                RocketChat.Say(playerid, message);
+                UnturnedChat.Say(playerid, message);
                 return;
             }
             if (vAsset.Amount > 1)
@@ -506,7 +510,7 @@ namespace ZaupShop
                 if (ammomagamt < amttosell)
                 {
                     message = ZaupShop.Instance.Translate("not_enough_ammo_sell", new object[] {name});
-                    RocketChat.Say(playerid, message);
+                    UnturnedChat.Say(playerid, message);
                     return;
                 }
             }
@@ -516,7 +520,7 @@ namespace ZaupShop
             if (price <= 0.00m)
             {
                 message = ZaupShop.Instance.Translate("no_sell_price_set", new object[] { name });
-                RocketChat.Say(playerid, message);
+                UnturnedChat.Say(playerid, message);
                 return;
             }
             byte quality = 100;
@@ -532,7 +536,7 @@ namespace ZaupShop
                         {
                             playerid.Player.Equipment.dequip();
                         }
-                        if (ZaupShop.Instance.Configuration.QualityCounts)
+                        if (ZaupShop.Instance.Configuration.Instance.QualityCounts)
                             quality = list[0].ItemJar.Item.Durability;
                         peritemprice = decimal.Round(price * (quality / 100.0m), 2);
                         addmoney += peritemprice;
@@ -574,12 +578,12 @@ namespace ZaupShop
                     addmoney += peritemprice;
                     break;
             }
-            decimal balance = Uconomy.Instance.Database.IncreaseBalance(playerid.CSteamID, addmoney);
-            message = ZaupShop.Instance.Translate("sold_items", new object[] {amt, name, addmoney, Uconomy.Instance.Configuration.MoneyName, balance, Uconomy.Instance.Configuration.MoneyName});
+            decimal balance = Uconomy.Instance.Database.IncreaseBalance(playerid.CSteamID.ToString(), addmoney);
+            message = ZaupShop.Instance.Translate("sold_items", new object[] {amt, name, addmoney, Uconomy.Instance.Configuration.Instance.MoneyName, balance, Uconomy.Instance.Configuration.Instance.MoneyName});
             if (ZaupShop.Instance.OnShopSell != null)
                 ZaupShop.Instance.OnShopSell(playerid, addmoney, amt, id);
             playerid.Player.gameObject.SendMessage("ZaupShopOnSell", new object[] { playerid, addmoney, amt, id }, SendMessageOptions.DontRequireReceiver);
-            RocketChat.Say(playerid, message);
+            UnturnedChat.Say(playerid, message);
         }
 
     }

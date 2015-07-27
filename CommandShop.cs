@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+
 using Rocket.API;
+using Rocket.Core;
+using Rocket.Core.Logging;
+using Rocket.Core.Permissions;
 using Rocket.Unturned;
+using Rocket.Unturned.Chat;
 using Rocket.Unturned.Commands;
-using Rocket.Unturned.Logging;
 using Rocket.Unturned.Player;
 using SDG.Unturned;
 using UnityEngine;
@@ -13,7 +17,7 @@ namespace ZaupShop
 {
     public class CommandShop : IRocketCommand
     {
-        public bool RunFromConsole
+        public bool AllowFromConsole
         {
             get
             {
@@ -45,15 +49,19 @@ namespace ZaupShop
         {
             get { return new List<string>(); }
         }
-
-        public void Execute(RocketPlayer playerid, string[] msg)
+        public List<string> Permissions
         {
-            bool console = (playerid == null) ? true : false;
+            get { return new List<string>() { "shop.*", "shop.add", "shop.rem", "shop.chng", "shop.buy" }; }
+        }
+        public void Execute(IRocketPlayer caller, string[] msg)
+        {
+            bool console = (caller is ConsolePlayer);
+            UnturnedPlayer playerid = (UnturnedPlayer)caller;
             string[] permnames = { "shop.*", "shop.add", "shop.rem", "shop.chng", "shop.buy" };
             bool[] perms = { false, false, false, false, false };
             bool anyuse = false;
             string message;
-            List<string> permlist = (console) ? new List<string>() : playerid.Permissions;
+            List<string> permlist = (console) ? new List<string>() : R.Permissions.GetPermissions(playerid);
             foreach (string s in permlist)
             {
                 switch (s)
@@ -100,7 +108,7 @@ namespace ZaupShop
             if (!anyuse)
             {
                 // Assume this is a player
-                RocketChat.Say(playerid, "You don't have permission to use the /shop command.");
+                UnturnedChat.Say(playerid, "You don't have permission to use the /shop command.");
                 return;
             }
             if (msg.Length == 0)
@@ -177,7 +185,7 @@ namespace ZaupShop
                         switch (type[0])
                         {
                             case "v":
-                                VehicleAsset va = (VehicleAsset)Assets.find(EAssetType.Vehicle, id);
+                                VehicleAsset va = (VehicleAsset)Assets.find(EAssetType.VEHICLE, id);
                                 message = ZaupShop.Instance.Translate("changed_or_added_to_shop", new object[] { 
                                     ac,
                                     va.Name,
@@ -191,7 +199,7 @@ namespace ZaupShop
                                 this.sendMessage(playerid, message, console);
                                 break;
                             default:
-                                ItemAsset ia = (ItemAsset)Assets.find(EAssetType.Item, id);
+                                ItemAsset ia = (ItemAsset)Assets.find(EAssetType.ITEM, id);
                                 message = ZaupShop.Instance.Translate("changed_or_added_to_shop", new object[] { 
                                     ac,
                                     ia.Name,
@@ -216,7 +224,7 @@ namespace ZaupShop
                         switch (type[0])
                         {
                             case "v":
-                                VehicleAsset va = (VehicleAsset)Assets.find(EAssetType.Vehicle, id);
+                                VehicleAsset va = (VehicleAsset)Assets.find(EAssetType.VEHICLE, id);
                                 message = ZaupShop.Instance.Translate("removed_from_shop", new object[] { va.Name });
                                 success = ZaupShop.Instance.ShopDB.DeleteVehicle((int)id);
                                 if (!success)
@@ -226,7 +234,7 @@ namespace ZaupShop
                                 this.sendMessage(playerid, message, console);
                                 break;
                             default:
-                                ItemAsset ia = (ItemAsset)Assets.find(EAssetType.Item, id);
+                                ItemAsset ia = (ItemAsset)Assets.find(EAssetType.ITEM, id);
                                 message = ZaupShop.Instance.Translate("removed_from_shop", new object[] { ia.Name });
                                 success = ZaupShop.Instance.ShopDB.DeleteItem((int)id);
                                 if (!success)
@@ -244,7 +252,7 @@ namespace ZaupShop
                             this.sendMessage(playerid, message, console);
                             return;
                         }
-                        ItemAsset iab = (ItemAsset)Assets.find(EAssetType.Item, id);
+                        ItemAsset iab = (ItemAsset)Assets.find(EAssetType.ITEM, id);
                         decimal buyb;
                         decimal.TryParse(msg[2], out buyb);
                         message = ZaupShop.Instance.Translate("set_buyback_price", new object[] {
@@ -266,7 +274,7 @@ namespace ZaupShop
                 }
             }
         }
-        private void sendMessage(RocketPlayer playerid, string message, bool console)
+        private void sendMessage(UnturnedPlayer playerid, string message, bool console)
         {
             if (console)
             {
@@ -274,7 +282,7 @@ namespace ZaupShop
             }
             else
             {
-                RocketChat.Say(playerid, message);
+                UnturnedChat.Say(playerid, message);
             }
         }
     }
