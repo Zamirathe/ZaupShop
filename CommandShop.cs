@@ -55,17 +55,11 @@ namespace ZaupShop
         public void Execute(IRocketPlayer caller, string[] msg)
         {
             bool console = (caller is ConsolePlayer);
-            UnturnedPlayer playerid = null;
-            if (!console)
-            {
-                playerid = (UnturnedPlayer)caller;
-            }
             string[] permnames = { "shop.*", "shop.add", "shop.rem", "shop.chng", "shop.buy" };
             bool[] perms = { false, false, false, false, false };
             bool anyuse = false;
             string message;
-            List<string> permlist = (console) ? new List<string>() : caller.GetPermissions();
-            foreach (string s in permlist)
+            foreach (string s in caller.GetPermissions())
             {
                 switch (s)
                 {
@@ -99,14 +93,17 @@ namespace ZaupShop
                         break;
                 }
             }
-            if (console || playerid.IsAdmin)
+            if (!console)
             {
-                perms[0] = true;
-                perms[1] = true;
-                perms[2] = true;
-                perms[3] = true;
-                perms[4] = true;
-                anyuse = true;
+                if (((UnturnedPlayer)caller).IsAdmin)
+                {
+                    perms[0] = true;
+                    perms[1] = true;
+                    perms[2] = true;
+                    perms[3] = true;
+                    perms[4] = true;
+                    anyuse = true;
+                }
             }
             if (!anyuse)
             {
