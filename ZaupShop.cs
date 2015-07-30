@@ -123,6 +123,10 @@ namespace ZaupShop
                         "A cost is required."
                     },
                     {
+                        "invalid_amt",
+                        "You have entered in an invalid amount."
+                    },
+                    {
                         "v_not_provided",
                         "You must specify v for vehicle or just an item id.  Ex. /shop rem/101"
                     },
@@ -210,7 +214,12 @@ namespace ZaupShop
             byte amttobuy = 1;
             if (components0.Length > 1)
             {
-                amttobuy = byte.Parse(components0[1]);
+                if (!byte.TryParse(components0[1], out amttobuy))
+                {
+                    message = ZaupShop.Instance.Translate("invalid_amt", new object[] { });
+                    UnturnedChat.Say(playerid, message);
+                    return;
+                }
             }
             string[] components = Parser.getComponentsFromSerial(components0[0], '.');
             if (components.Length == 2 && components[0] != "v")
@@ -246,10 +255,9 @@ namespace ZaupShop
                             }
                         }
                     }
-                    if (name == null && id == 0)
+                    if (Assets.find(EAssetType.VEHICLE, id) == null)
                     {
-                        message = ZaupShop.Instance.Translate("could_not_find", new object[] {
-                            components[1]});
+                        message = ZaupShop.Instance.Translate("could_not_find", new object[] {components[1]});
                         UnturnedChat.Say(playerid, message);
                         return;
                     }
@@ -307,12 +315,11 @@ namespace ZaupShop
                             }
                         }
                     }
-                    if (name == null && id == 0)
+                    if (Assets.find(EAssetType.ITEM, id) == null)
                     {
                         message = ZaupShop.Instance.Translate("could_not_find", new object[] {components[0]});
                         UnturnedChat.Say(playerid, message);
                         return;
-
                     }
                     else if (name == null && id != 0)
                     {
@@ -379,7 +386,7 @@ namespace ZaupShop
                             }
                         }
                     }
-                    if (name == null && id == 0)
+                    if (Assets.find(EAssetType.VEHICLE, id) == null)
                     {
                         message = ZaupShop.Instance.Translate("could_not_find", new object[] {components[1]});
                         UnturnedChat.Say(playerid, message);
@@ -414,7 +421,7 @@ namespace ZaupShop
                             }
                         }
                     }
-                    if (name == null && id == 0)
+                    if (Assets.find(EAssetType.ITEM, id) == null)
                     {
                         message = ZaupShop.Instance.Translate("could_not_find", new object[] {components[0]});
                         UnturnedChat.Say(playerid, message);
@@ -448,7 +455,12 @@ namespace ZaupShop
             byte amttosell = 1;
             if (components.Length > 1)
             {
-                amttosell = byte.Parse(components[1]);
+                if (!byte.TryParse(components[1], out amttosell))
+                {
+                    message = ZaupShop.Instance.Translate("invalid_amt", new object[] { });
+                    UnturnedChat.Say(playerid, message);
+                    return;
+                }
             }
             byte amt = amttosell;
             ushort id;
@@ -475,7 +487,7 @@ namespace ZaupShop
                     }
                 }
             }
-            if (name == null && id == 0)
+            if (Assets.find(EAssetType.ITEM, id) == null)
             {
                 message = ZaupShop.Instance.Translate("could_not_find", new object[] {components[0]});
                 UnturnedChat.Say(playerid, message);
