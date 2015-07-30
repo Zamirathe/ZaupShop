@@ -128,7 +128,7 @@ namespace ZaupShop
                     },
                     {
                         "invalid_id_given",
-                        "You need to provide an item or vehicle id."
+                        "You need to provide a valid item or vehicle id."
                     },
                     {
                         "no_permission_shop_chng",
