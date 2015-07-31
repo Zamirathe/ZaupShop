@@ -5,7 +5,6 @@ using Rocket.API;
 using Rocket.Core;
 using Rocket.Core.Logging;
 using Rocket.Core.Permissions;
-using Rocket.Unturned;
 using Rocket.Unturned.Chat;
 using Rocket.Unturned.Commands;
 using Rocket.Unturned.Player;
@@ -56,13 +55,11 @@ namespace ZaupShop
         public void Execute(IRocketPlayer caller, string[] msg)
         {
             bool console = (caller is ConsolePlayer);
-            UnturnedPlayer playerid = (UnturnedPlayer)caller;
             string[] permnames = { "shop.*", "shop.add", "shop.rem", "shop.chng", "shop.buy" };
             bool[] perms = { false, false, false, false, false };
             bool anyuse = false;
             string message;
-            List<string> permlist = (console) ? new List<string>() : R.Permissions.GetPermissions(playerid);
-            foreach (string s in permlist)
+            foreach (string s in caller.GetPermissions())
             {
                 switch (s)
                 {
@@ -96,38 +93,41 @@ namespace ZaupShop
                         break;
                 }
             }
-            if (console || playerid.IsAdmin)
+            if (!console)
             {
-                perms[0] = true;
-                perms[1] = true;
-                perms[2] = true;
-                perms[3] = true;
-                perms[4] = true;
-                anyuse = true;
+                if (((UnturnedPlayer)caller).IsAdmin)
+                {
+                    perms[0] = true;
+                    perms[1] = true;
+                    perms[2] = true;
+                    perms[3] = true;
+                    perms[4] = true;
+                    anyuse = true;
+                }
             }
             if (!anyuse)
             {
                 // Assume this is a player
-                UnturnedChat.Say(playerid, "You don't have permission to use the /shop command.");
+                UnturnedChat.Say(caller, "You don't have permission to use the /shop command.");
                 return;
             }
             if (msg.Length == 0)
             {
                 message = ZaupShop.Instance.Translate("shop_command_usage", new object[] {});
                 // We are going to print how to use
-                this.sendMessage(playerid, message, console);
+                this.sendMessage(caller, message, console);
                 return;
             }
             if (msg.Length < 2)
             {
                 message = ZaupShop.Instance.Translate("no_itemid_given", new object[] {});
-                this.sendMessage(playerid, message, console);
+                this.sendMessage(caller, message, console);
                 return;
             }
             if (msg.Length == 2 && msg[0] != "rem")
             {
                 message = ZaupShop.Instance.Translate("no_cost_given", new object[] { });
-                this.sendMessage(playerid, message, console);
+                this.sendMessage(caller, message, console);
                 return;
             }
             else if (msg.Length >= 2)
@@ -136,7 +136,7 @@ namespace ZaupShop
                 if (type.Length > 1 && type[0] != "v")
                 {
                     message = ZaupShop.Instance.Translate("v_not_provided", new object[] { });
-                    this.sendMessage(playerid, message, console);
+                    this.sendMessage(caller, message, console);
                     return;
                 }
                 ushort id;
@@ -144,14 +144,14 @@ namespace ZaupShop
                 {
                     if (!ushort.TryParse(type[1], out id)) {
                         message = ZaupShop.Instance.Translate("invalid_id_given", new object[] { });
-                        this.sendMessage(playerid, message, console);
+                        this.sendMessage(caller, message, console);
                         return;
                     }
                 } else {
                     if (!ushort.TryParse(type[0], out id))
                     {
                         message = ZaupShop.Instance.Translate("invalid_id_given", new object[] { });
-                        this.sendMessage(playerid, message, console);
+                        this.sendMessage(caller, message, console);
                         return;
                     }
                 }
@@ -165,7 +165,7 @@ namespace ZaupShop
                         if (!perms[3] && !perms[0])
                         {
                             message = ZaupShop.Instance.Translate("no_permission_shop_chng", new object[] { });
-                            this.sendMessage(playerid, message, console);
+                            this.sendMessage(caller, message, console);
                             return;
                         }
                         change = true;
@@ -177,7 +177,7 @@ namespace ZaupShop
                             if (!perms[1] && !perms[0])
                             {
                                 message = ZaupShop.Instance.Translate("no_permission_shop_add", new object[] { });
-                                this.sendMessage(playerid, message, console);
+                                this.sendMessage(caller, message, console);
                                 return;
                             }
                         }
@@ -185,6 +185,12 @@ namespace ZaupShop
                         switch (type[0])
                         {
                             case "v":
+                                if (!this.IsAsset(id, "v"))
+                                {
+                                    message = ZaupShop.Instance.Translate("invalid_id_given", new object[] { });
+                                    this.sendMessage(caller, message, console);
+                                    return;
+                                }
                                 VehicleAsset va = (VehicleAsset)Assets.find(EAssetType.VEHICLE, id);
                                 message = ZaupShop.Instance.Translate("changed_or_added_to_shop", new object[] { 
                                     ac,
@@ -196,9 +202,15 @@ namespace ZaupShop
                                 {
                                     message = ZaupShop.Instance.Translate("error_adding_or_changing", new object[] { va.Name });
                                 }
-                                this.sendMessage(playerid, message, console);
+                                this.sendMessage(caller, message, console);
                                 break;
                             default:
+                                if (!this.IsAsset(id, "i"))
+                                {
+                                    message = ZaupShop.Instance.Translate("invalid_id_given", new object[] { });
+                                    this.sendMessage(caller, message, console);
+                                    return;
+                                }
                                 ItemAsset ia = (ItemAsset)Assets.find(EAssetType.ITEM, id);
                                 message = ZaupShop.Instance.Translate("changed_or_added_to_shop", new object[] { 
                                     ac,
@@ -210,7 +222,7 @@ namespace ZaupShop
                                 {
                                     message = ZaupShop.Instance.Translate("error_adding_or_changing", new object[] { ia.Name });
                                 }
-                                this.sendMessage(playerid, message, console);
+                                this.sendMessage(caller, message, console);
                                 break;
                         }
                         break;
@@ -218,12 +230,18 @@ namespace ZaupShop
                         if (!perms[2] && !perms[0])
                         {
                             message = ZaupShop.Instance.Translate("no_permission_shop_rem", new object[] { });
-                            this.sendMessage(playerid, message, console);
+                            this.sendMessage(caller, message, console);
                             return;
                         }
                         switch (type[0])
                         {
                             case "v":
+                                if (!this.IsAsset(id, "v"))
+                                {
+                                    message = ZaupShop.Instance.Translate("invalid_id_given", new object[] { });
+                                    this.sendMessage(caller, message, console);
+                                    return;
+                                }
                                 VehicleAsset va = (VehicleAsset)Assets.find(EAssetType.VEHICLE, id);
                                 message = ZaupShop.Instance.Translate("removed_from_shop", new object[] { va.Name });
                                 success = ZaupShop.Instance.ShopDB.DeleteVehicle((int)id);
@@ -231,9 +249,15 @@ namespace ZaupShop
                                 {
                                     message = ZaupShop.Instance.Translate("not_in_shop_to_remove", new object[] { va.Name });
                                 }
-                                this.sendMessage(playerid, message, console);
+                                this.sendMessage(caller, message, console);
                                 break;
                             default:
+                                if (!this.IsAsset(id, "i"))
+                                {
+                                    message = ZaupShop.Instance.Translate("invalid_id_given", new object[] { });
+                                    this.sendMessage(caller, message, console);
+                                    return;
+                                }
                                 ItemAsset ia = (ItemAsset)Assets.find(EAssetType.ITEM, id);
                                 message = ZaupShop.Instance.Translate("removed_from_shop", new object[] { ia.Name });
                                 success = ZaupShop.Instance.ShopDB.DeleteItem((int)id);
@@ -241,7 +265,7 @@ namespace ZaupShop
                                 {
                                     message = ZaupShop.Instance.Translate("not_in_shop_to_remove", new object[] { ia.Name });
                                 }
-                                this.sendMessage(playerid, message, console);
+                                this.sendMessage(caller, message, console);
                                 break;
                         }
                         break;
@@ -249,7 +273,13 @@ namespace ZaupShop
                         if (!perms[4] && !perms[0])
                         {
                             message = ZaupShop.Instance.Translate("no_permission_shop_buy", new object[] { });
-                            this.sendMessage(playerid, message, console);
+                            this.sendMessage(caller, message, console);
+                            return;
+                        }
+                        if (!this.IsAsset(id, "i"))
+                        {
+                            message = ZaupShop.Instance.Translate("invalid_id_given", new object[] { });
+                            this.sendMessage(caller, message, console);
                             return;
                         }
                         ItemAsset iab = (ItemAsset)Assets.find(EAssetType.ITEM, id);
@@ -264,17 +294,38 @@ namespace ZaupShop
                         {
                             message = ZaupShop.Instance.Translate("not_in_shop_to_buyback", new object[] { iab.Name });
                         }
-                        this.sendMessage(playerid, message, console);
+                        this.sendMessage(caller, message, console);
                         break;
                     default:
                         // We shouldn't get this, but if we do send an error.
                         message = ZaupShop.Instance.Translate("not_in_shop_to_remove", new object[] { });;
-                        this.sendMessage(playerid, message, console);
+                        this.sendMessage(caller, message, console);
                         return;
                 }
             }
         }
-        private void sendMessage(UnturnedPlayer playerid, string message, bool console)
+        private bool IsAsset(ushort id, string type)
+        {
+            // Check for valid Item/Vehicle Id.
+            switch (type)
+            {
+                case "i":
+                    if (Assets.find(EAssetType.ITEM, id) != null)
+                    {
+                        return true;
+                    }
+                    return false;
+                case "v":
+                    if (Assets.find(EAssetType.VEHICLE, id) != null)
+                    {
+                        return true;
+                    }
+                    return false;
+                default:
+                    return false;
+            }
+        }
+        private void sendMessage(IRocketPlayer caller, string message, bool console)
         {
             if (console)
             {
@@ -282,7 +333,7 @@ namespace ZaupShop
             }
             else
             {
-                UnturnedChat.Say(playerid, message);
+                UnturnedChat.Say(caller, message);
             }
         }
     }
