@@ -12,7 +12,7 @@ namespace ZaupShop
         public bool CanSellItems;
         public bool QualityCounts;
 
-        public ZaupShopConfiguration()
+        public void LoadDefaults()
         {
             ItemShopTableName = "uconomyitemshop";
             VehicleShopTableName = "uconomyvehicleshop";
