@@ -222,7 +222,7 @@ namespace ZaupShop
                 }
             }
             string[] components = Parser.getComponentsFromSerial(components0[0], '.');
-            if (components.Length == 2 && components[0] != "v")
+            if ((components.Length == 2 && components[0].Trim() != "v") || (components.Length == 1 && components[0].Trim() == "v") || components.Length > 2 || components0[0].Trim() == string.Empty)
             {
                 message = ZaupShop.Instance.Translate("buy_command_usage", new object[] { });
                 // We are going to print how to use
@@ -239,7 +239,7 @@ namespace ZaupShop
                         UnturnedChat.Say(playerid, message);
                         return;
                     }
-                    string name = "";
+                    string name = null;
                     if (!ushort.TryParse(components[1], out id))
                     {
                         Asset[] array = Assets.find(EAssetType.VEHICLE);
@@ -275,7 +275,7 @@ namespace ZaupShop
                     }
                     if (balance < cost)
                     {
-                        message = ZaupShop.Instance.Translate("not_enough_currency_msg", new object[] {Uconomy.Instance.Configuration.Instance.MoneyName, name});
+                        message = ZaupShop.Instance.Translate("not_enough_currency_msg", new object[] {Uconomy.Instance.Configuration.Instance.MoneyName, "1", name});
                         UnturnedChat.Say(playerid, message);
                         return;
                     }
@@ -352,14 +352,14 @@ namespace ZaupShop
         public void Cost(UnturnedPlayer playerid, string[] components)
         {
             string message;
-            if (components.Length == 0)
+            if (components.Length == 0 || (components.Length == 1 && (components[0].Trim() == string.Empty || components[0].Trim() == "v")))
             {
                 message = ZaupShop.Instance.Translate("cost_command_usage", new object[] { });
                 // We are going to print how to use
                 UnturnedChat.Say(playerid, message);
                 return;
             }
-            if (components.Length == 2 && components[0] != "v")
+            if (components.Length == 2 && (components[0] != "v" || components[1].Trim() == string.Empty))
             {
                 message = ZaupShop.Instance.Translate("cost_command_usage", new object[] { });
                 // We are going to print how to use
@@ -445,7 +445,7 @@ namespace ZaupShop
         public void Sell(UnturnedPlayer playerid, string[] components)
         {
             string message;
-            if (components.Length == 0)
+            if (components.Length == 0 || (components.Length > 0 && components[0].Trim() == string.Empty))
             {
                 message = ZaupShop.Instance.Translate("sell_command_usage", new object[] { });
                 // We are going to print how to use
