@@ -6,7 +6,7 @@ using Rocket.Unturned.Commands;
 using Rocket.Unturned.Player;
 using SDG.Unturned;
 using UnityEngine;
-using unturned.ROCKS.Uconomy;
+using fr34kyn01535.Uconomy;
 using Steamworks;
 
 namespace ZaupShop

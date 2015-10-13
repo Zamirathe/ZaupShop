@@ -3,7 +3,7 @@ using MySql.Data.MySqlClient;
 using Rocket.Core.Logging;
 using Rocket.API;
 using System;
-using unturned.ROCKS.Uconomy;
+using fr34kyn01535.Uconomy;
 
 namespace ZaupShop
 {
