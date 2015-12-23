@@ -8,11 +8,12 @@ namespace ZaupShop
 {
     public class CommandBuy : IRocketCommand
     {
-        public bool AllowFromConsole
+
+        public AllowedCaller AllowedCaller
         {
             get
             {
-                return false;
+                return AllowedCaller.Player;
             }
         }
         public string Name
@@ -44,6 +45,7 @@ namespace ZaupShop
         {
             get { return new List<string>(); }
         }
+
         public void Execute(IRocketPlayer playerid, string[] msg)
         {
             ZaupShop.Instance.Buy((UnturnedPlayer)playerid, msg);

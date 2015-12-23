@@ -9,11 +9,12 @@ namespace ZaupShop
 {
     public class CommandSell : IRocketCommand
     {
-        public bool AllowFromConsole
+
+        public AllowedCaller AllowedCaller
         {
             get
             {
-                return false;
+                return AllowedCaller.Player;
             }
         }
         public string Name

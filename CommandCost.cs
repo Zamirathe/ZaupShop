@@ -13,11 +13,12 @@ namespace ZaupShop
 {
     public class CommandCost : IRocketCommand
     {
-        public bool AllowFromConsole
+
+        public AllowedCaller AllowedCaller
         {
             get
             {
-                return false;
+                return AllowedCaller.Player;
             }
         }
         public string Name
