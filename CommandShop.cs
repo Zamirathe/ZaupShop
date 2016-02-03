@@ -11,6 +11,7 @@ using Rocket.Unturned.Player;
 using SDG.Unturned;
 using UnityEngine;
 using Steamworks;
+using Rocket.API.Serialisation;
 
 namespace ZaupShop
 {
@@ -60,9 +61,9 @@ namespace ZaupShop
             bool[] perms = { false, false, false, false, false };
             bool anyuse = false;
             string message;
-            foreach (string s in caller.GetPermissions())
+            foreach (Permission s in caller.GetPermissions())
             {
-                switch (s)
+                switch (s.Name)
                 {
                     case "shop.*":
                         perms[0] = true;
