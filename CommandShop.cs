@@ -331,7 +331,7 @@ namespace ZaupShop
         {
             if (console)
             {
-                Logger.Log(message);
+                Rocket.Core.Logging.Logger.Log(message);
             }
             else
             {
