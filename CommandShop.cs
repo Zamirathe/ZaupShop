@@ -196,13 +196,13 @@ namespace ZaupShop
                                 VehicleAsset va = (VehicleAsset)Assets.find(EAssetType.VEHICLE, id);
                                 message = ZaupShop.Instance.Translate("changed_or_added_to_shop", new object[] { 
                                     ac,
-                                    va.Name,
+                                    va.vehicleName,
                                     msg[2]
                                 });
-                                success = ZaupShop.Instance.ShopDB.AddVehicle((int)id, va.Name, decimal.Parse(msg[2]), change);
+                                success = ZaupShop.Instance.ShopDB.AddVehicle((int)id, va.vehicleName, decimal.Parse(msg[2]), change);
                                 if (!success)
                                 {
-                                    message = ZaupShop.Instance.Translate("error_adding_or_changing", new object[] { va.Name });
+                                    message = ZaupShop.Instance.Translate("error_adding_or_changing", new object[] { va.vehicleName });
                                 }
                                 this.sendMessage(caller, message, console);
                                 break;
@@ -216,13 +216,13 @@ namespace ZaupShop
                                 ItemAsset ia = (ItemAsset)Assets.find(EAssetType.ITEM, id);
                                 message = ZaupShop.Instance.Translate("changed_or_added_to_shop", new object[] { 
                                     ac,
-                                    ia.Name,
+                                    ia.itemName,
                                     msg[2]
                                 });
-                                success = ZaupShop.Instance.ShopDB.AddItem((int)id, ia.Name, decimal.Parse(msg[2]), change);
+                                success = ZaupShop.Instance.ShopDB.AddItem((int)id, ia.itemName, decimal.Parse(msg[2]), change);
                                 if (!success)
                                 {
-                                    message = ZaupShop.Instance.Translate("error_adding_or_changing", new object[] { ia.Name });
+                                    message = ZaupShop.Instance.Translate("error_adding_or_changing", new object[] { ia.itemName });
                                 }
                                 this.sendMessage(caller, message, console);
                                 break;
@@ -245,11 +245,11 @@ namespace ZaupShop
                                     return;
                                 }
                                 VehicleAsset va = (VehicleAsset)Assets.find(EAssetType.VEHICLE, id);
-                                message = ZaupShop.Instance.Translate("removed_from_shop", new object[] { va.Name });
+                                message = ZaupShop.Instance.Translate("removed_from_shop", new object[] { va.vehicleName });
                                 success = ZaupShop.Instance.ShopDB.DeleteVehicle((int)id);
                                 if (!success)
                                 {
-                                    message = ZaupShop.Instance.Translate("not_in_shop_to_remove", new object[] { va.Name });
+                                    message = ZaupShop.Instance.Translate("not_in_shop_to_remove", new object[] { va.vehicleName });
                                 }
                                 this.sendMessage(caller, message, console);
                                 break;
@@ -261,11 +261,11 @@ namespace ZaupShop
                                     return;
                                 }
                                 ItemAsset ia = (ItemAsset)Assets.find(EAssetType.ITEM, id);
-                                message = ZaupShop.Instance.Translate("removed_from_shop", new object[] { ia.Name });
+                                message = ZaupShop.Instance.Translate("removed_from_shop", new object[] { ia.itemName });
                                 success = ZaupShop.Instance.ShopDB.DeleteItem((int)id);
                                 if (!success)
                                 {
-                                    message = ZaupShop.Instance.Translate("not_in_shop_to_remove", new object[] { ia.Name });
+                                    message = ZaupShop.Instance.Translate("not_in_shop_to_remove", new object[] { ia.itemName });
                                 }
                                 this.sendMessage(caller, message, console);
                                 break;
@@ -288,13 +288,13 @@ namespace ZaupShop
                         decimal buyb;
                         decimal.TryParse(msg[2], out buyb);
                         message = ZaupShop.Instance.Translate("set_buyback_price", new object[] {
-                            iab.Name,
+                            iab.itemName,
                             buyb.ToString()
                         });
                         success = ZaupShop.Instance.ShopDB.SetBuyPrice((int)id, buyb);
                         if (!success)
                         {
-                            message = ZaupShop.Instance.Translate("not_in_shop_to_buyback", new object[] { iab.Name });
+                            message = ZaupShop.Instance.Translate("not_in_shop_to_buyback", new object[] { iab.itemName });
                         }
                         this.sendMessage(caller, message, console);
                         break;

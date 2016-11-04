@@ -247,10 +247,10 @@ namespace ZaupShop
                         for (int i = 0; i < array2.Length; i++)
                         {
                             VehicleAsset vAsset = (VehicleAsset)array2[i];
-                            if (vAsset != null && vAsset.Name != null && vAsset.Name.ToLower().Contains(components[1].ToLower()))
+                            if (vAsset != null && vAsset.vehicleName != null && vAsset.vehicleName.ToLower().Contains(components[1].ToLower()))
                             {
-                                id = vAsset.Id;
-                                name = vAsset.Name;
+                                id = vAsset.id;
+                                name = vAsset.vehicleName;
                                 break;
                             }
                         }
@@ -263,7 +263,7 @@ namespace ZaupShop
                     }
                     else if (name == null && id != 0)
                     {
-                        name = ((VehicleAsset)Assets.find(EAssetType.VEHICLE, id)).Name;
+                        name = ((VehicleAsset)Assets.find(EAssetType.VEHICLE, id)).vehicleName;
                     }
                     decimal cost = ZaupShop.Instance.ShopDB.GetVehicleCost(id);
                     decimal balance = Uconomy.Instance.Database.GetBalance(playerid.CSteamID.ToString());
@@ -307,10 +307,10 @@ namespace ZaupShop
                         for (int i = 0; i < array2.Length; i++)
                         {
                             ItemAsset vAsset = (ItemAsset)array2[i];
-                            if (vAsset != null && vAsset.Name != null && vAsset.Name.ToLower().Contains(components[0].ToLower()))
+                            if (vAsset != null && vAsset.itemName != null && vAsset.itemName.ToLower().Contains(components[0].ToLower()))
                             {
-                                id = vAsset.Id;
-                                name = vAsset.Name;
+                                id = vAsset.id;
+                                name = vAsset.itemName;
                                 break;
                             }
                         }
@@ -323,7 +323,7 @@ namespace ZaupShop
                     }
                     else if (name == null && id != 0)
                     {
-                        name = ((ItemAsset)Assets.find(EAssetType.ITEM, id)).Name;
+                        name = ((ItemAsset)Assets.find(EAssetType.ITEM, id)).itemName;
                     }
                     cost = decimal.Round(ZaupShop.Instance.ShopDB.GetItemCost(id) * amttobuy, 2);
                     balance = Uconomy.Instance.Database.GetBalance(playerid.CSteamID.ToString());
@@ -378,10 +378,10 @@ namespace ZaupShop
                         for (int i = 0; i < array2.Length; i++)
                         {
                             VehicleAsset vAsset = (VehicleAsset)array2[i];
-                            if (vAsset != null && vAsset.Name != null && vAsset.Name.ToLower().Contains(components[1].ToLower()))
+                            if (vAsset != null && vAsset.vehicleName != null && vAsset.vehicleName.ToLower().Contains(components[1].ToLower()))
                             {
-                                id = vAsset.Id;
-                                name = vAsset.Name;
+                                id = vAsset.id;
+                                name = vAsset.vehicleName;
                                 break;
                             }
                         }
@@ -394,7 +394,7 @@ namespace ZaupShop
                     }
                     else if (name == null && id != 0)
                     {
-                        name = ((VehicleAsset)Assets.find(EAssetType.VEHICLE, id)).Name;
+                        name = ((VehicleAsset)Assets.find(EAssetType.VEHICLE, id)).vehicleName;
                     }
                     decimal cost = ZaupShop.Instance.ShopDB.GetVehicleCost(id);
                     message = ZaupShop.Instance.Translate("vehicle_cost_msg", new object[] {name, cost.ToString(), Uconomy.Instance.Configuration.Instance.MoneyName});
@@ -413,10 +413,10 @@ namespace ZaupShop
                         for (int i = 0; i < array2.Length; i++)
                         {
                             ItemAsset iAsset = (ItemAsset)array2[i];
-                            if (iAsset != null && iAsset.Name != null && iAsset.Name.ToLower().Contains(components[0].ToLower()))
+                            if (iAsset != null && iAsset.itemName != null && iAsset.itemName.ToLower().Contains(components[0].ToLower()))
                             {
-                                id = iAsset.Id;
-                                name = iAsset.Name;
+                                id = iAsset.id;
+                                name = iAsset.itemName;
                                 break;
                             }
                         }
@@ -429,7 +429,7 @@ namespace ZaupShop
                     }
                     else if (name == null && id != 0)
                     {
-                        name = ((ItemAsset)Assets.find(EAssetType.ITEM, id)).Name;
+                        name = ((ItemAsset)Assets.find(EAssetType.ITEM, id)).itemName;
                     }
                     cost = ZaupShop.Instance.ShopDB.GetItemCost(id);
                     decimal bbp = ZaupShop.Instance.ShopDB.GetItemBuyPrice(id);
@@ -479,10 +479,10 @@ namespace ZaupShop
                 for (int i = 0; i < array2.Length; i++)
                 {
                     vAsset = (ItemAsset)array2[i];
-                    if (vAsset != null && vAsset.Name != null && vAsset.Name.ToLower().Contains(components[0].ToLower()))
+                    if (vAsset != null && vAsset.itemName != null && vAsset.itemName.ToLower().Contains(components[0].ToLower()))
                     {
-                        id = vAsset.Id;
-                        name = vAsset.Name;
+                        id = vAsset.id;
+                        name = vAsset.itemName;
                         break;
                     }
                 }
@@ -496,7 +496,7 @@ namespace ZaupShop
             else if (name == null && id != 0)
             {
                 vAsset = (ItemAsset)Assets.find(EAssetType.ITEM, id);
-                name = vAsset.Name;
+                name = vAsset.itemName;
             }
             // Get how many they have
             if (playerid.Inventory.has(id) == null)
@@ -506,18 +506,18 @@ namespace ZaupShop
                 return;
             }
             List<InventorySearch> list = playerid.Inventory.search(id, true, true);
-            if (list.Count == 0 || (vAsset.Amount == 1 && list.Count < amttosell))
+            if (list.Count == 0 || (vAsset.amount == 1 && list.Count < amttosell))
             {
                 message = ZaupShop.Instance.Translate("not_enough_items_sell", new object[] {amttosell.ToString(), name});
                 UnturnedChat.Say(playerid, message);
                 return;
             }
-            if (vAsset.Amount > 1)
+            if (vAsset.amount > 1)
             {
                 int ammomagamt = 0;
                 foreach (InventorySearch ins in list)
                 {
-                    ammomagamt += ins.ItemJar.Item.Amount;
+                    ammomagamt += ins.jar.item.amount;
                 }
                 if (ammomagamt < amttosell)
                 {
@@ -538,21 +538,21 @@ namespace ZaupShop
             byte quality = 100;
             decimal peritemprice = 0;
             decimal addmoney = 0;
-            switch (vAsset.Amount)
+            switch (vAsset.amount)
             {
                 case 1:
                     // These are single items, not ammo or magazines
                     while (amttosell > 0)
                     {
-                        if (playerid.Player.Equipment.checkSelection(list[0].InventoryGroup, list[0].ItemJar.PositionX, list[0].ItemJar.PositionY))
+                        if (playerid.Player.equipment.checkSelection(list[0].page, list[0].jar.x, list[0].jar.y))
                         {
-                            playerid.Player.Equipment.dequip();
+                            playerid.Player.equipment.dequip();
                         }
                         if (ZaupShop.Instance.Configuration.Instance.QualityCounts)
-                            quality = list[0].ItemJar.Item.Durability;
+                            quality = list[0].jar.item.durability;
                         peritemprice = decimal.Round(price * (quality / 100.0m), 2);
                         addmoney += peritemprice;
-                        playerid.Inventory.removeItem(list[0].InventoryGroup, playerid.Inventory.getIndex(list[0].InventoryGroup, list[0].ItemJar.PositionX, list[0].ItemJar.PositionY));
+                        playerid.Inventory.removeItem(list[0].page, playerid.Inventory.getIndex(list[0].page, list[0].jar.x, list[0].jar.y));
                         list.RemoveAt(0);
                         amttosell--;
                     }
@@ -562,31 +562,31 @@ namespace ZaupShop
                     byte amttosell1 = amttosell;
                     while (amttosell > 0)
                     {
-                        if (playerid.Player.Equipment.checkSelection(list[0].InventoryGroup, list[0].ItemJar.PositionX, list[0].ItemJar.PositionY))
+                        if (playerid.Player.equipment.checkSelection(list[0].page, list[0].jar.x, list[0].jar.y))
                         {
-                            playerid.Player.Equipment.dequip();
+                            playerid.Player.equipment.dequip();
                         }
-                        if (list[0].ItemJar.Item.Amount >= amttosell)
+                        if (list[0].jar.item.amount >= amttosell)
                         {
-                            byte left = (byte)(list[0].ItemJar.Item.Amount - amttosell);
-                            list[0].ItemJar.Item.Amount = left;
-                            playerid.Inventory.sendUpdateAmount(list[0].InventoryGroup, list[0].ItemJar.PositionX, list[0].ItemJar.PositionY, left);
+                            byte left = (byte)(list[0].jar.item.amount - amttosell);
+                            list[0].jar.item.amount = left;
+                            playerid.Inventory.sendUpdateAmount(list[0].page, list[0].jar.x, list[0].jar.y, left);
                             amttosell = 0;
                             if (left == 0)
                             {
-                                playerid.Inventory.removeItem(list[0].InventoryGroup, playerid.Inventory.getIndex(list[0].InventoryGroup, list[0].ItemJar.PositionX, list[0].ItemJar.PositionY));
+                                playerid.Inventory.removeItem(list[0].page, playerid.Inventory.getIndex(list[0].page, list[0].jar.x, list[0].jar.y));
                                 list.RemoveAt(0);
                             }
                         }
                         else
                         {
-                            amttosell -= list[0].ItemJar.Item.Amount;
-                            playerid.Inventory.sendUpdateAmount(list[0].InventoryGroup, list[0].ItemJar.PositionX, list[0].ItemJar.PositionY, 0);
-                            playerid.Inventory.removeItem(list[0].InventoryGroup, playerid.Inventory.getIndex(list[0].InventoryGroup, list[0].ItemJar.PositionX, list[0].ItemJar.PositionY));
+                            amttosell -= list[0].jar.item.amount;
+                            playerid.Inventory.sendUpdateAmount(list[0].page, list[0].jar.x, list[0].jar.y, 0);
+                            playerid.Inventory.removeItem(list[0].page, playerid.Inventory.getIndex(list[0].page, list[0].jar.x, list[0].jar.y));
                             list.RemoveAt(0);
                         }
                     }
-                    peritemprice = decimal.Round(price * ((decimal)amttosell1 / (decimal)vAsset.Amount), 2);
+                    peritemprice = decimal.Round(price * ((decimal)amttosell1 / (decimal)vAsset.amount), 2);
                     addmoney += peritemprice;
                     break;
             }
