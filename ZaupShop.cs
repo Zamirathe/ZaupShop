@@ -249,7 +249,7 @@ namespace ZaupShop
                             VehicleAsset vAsset = (VehicleAsset)array2[i];
                             if (vAsset != null && vAsset.Name != null && vAsset.Name.ToLower().Contains(components[1].ToLower()))
                             {
-                                id = vAsset.Id;
+                                id = vAsset.id;
                                 name = vAsset.Name;
                                 break;
                             }
@@ -309,7 +309,7 @@ namespace ZaupShop
                             ItemAsset vAsset = (ItemAsset)array2[i];
                             if (vAsset != null && vAsset.Name != null && vAsset.Name.ToLower().Contains(components[0].ToLower()))
                             {
-                                id = vAsset.Id;
+                                id = vAsset.id;
                                 name = vAsset.Name;
                                 break;
                             }
@@ -380,7 +380,7 @@ namespace ZaupShop
                             VehicleAsset vAsset = (VehicleAsset)array2[i];
                             if (vAsset != null && vAsset.Name != null && vAsset.Name.ToLower().Contains(components[1].ToLower()))
                             {
-                                id = vAsset.Id;
+                                id = vAsset.id;
                                 name = vAsset.Name;
                                 break;
                             }
@@ -415,7 +415,7 @@ namespace ZaupShop
                             ItemAsset iAsset = (ItemAsset)array2[i];
                             if (iAsset != null && iAsset.Name != null && iAsset.Name.ToLower().Contains(components[0].ToLower()))
                             {
-                                id = iAsset.Id;
+                                id = iAsset.id;
                                 name = iAsset.Name;
                                 break;
                             }
@@ -481,7 +481,7 @@ namespace ZaupShop
                     vAsset = (ItemAsset)array2[i];
                     if (vAsset != null && vAsset.Name != null && vAsset.Name.ToLower().Contains(components[0].ToLower()))
                     {
-                        id = vAsset.Id;
+                        id = vAsset.id;
                         name = vAsset.Name;
                         break;
                     }
