@@ -349,7 +349,7 @@ namespace ZaupShop
                     break;
             }
         }
-        public void Cost(UnturnedPlayer playerid, string[] components)
+        public void Cost(IRocketPlayer playerid, string[] components)
         {
             string message;
             if (components.Length == 0 || (components.Length == 1 && (components[0].Trim() == string.Empty || components[0].Trim() == "v")))
