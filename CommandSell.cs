@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Rocket.API;
 using Rocket.Unturned.Commands;
 using Rocket.Unturned.Player;
+using Steamworks;
 
 namespace ZaupShop
 {
@@ -48,7 +49,7 @@ namespace ZaupShop
         }
         public void Execute(IRocketPlayer playerid, string[] msg)
         {
-            ZaupShop.Instance.Sell((UnturnedPlayer)playerid, msg);
+            ZaupShop.Instance.Sell(UnturnedPlayer.FromCSteamID(new CSteamID(ulong.Parse(playerid.Id))), msg);
         }
     }
 }
