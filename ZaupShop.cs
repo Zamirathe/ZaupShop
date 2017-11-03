@@ -442,7 +442,7 @@ namespace ZaupShop
                     break;
             }
         }
-        public void Sell(UnturnedPlayer playerid, string[] components)
+        public bool Sell(UnturnedPlayer playerid, string[] components)
         {
             string message;
             if (components.Length == 0 || (components.Length > 0 && components[0].Trim() == string.Empty))
@@ -450,7 +450,7 @@ namespace ZaupShop
                 message = ZaupShop.Instance.Translate("sell_command_usage", new object[] { });
                 // We are going to print how to use
                 UnturnedChat.Say(playerid, message);
-                return;
+                return false;
             }
             byte amttosell = 1;
             if (components.Length > 1)
@@ -459,7 +459,7 @@ namespace ZaupShop
                 {
                     message = ZaupShop.Instance.Translate("invalid_amt", new object[] { });
                     UnturnedChat.Say(playerid, message);
-                    return;
+                    return false;
                 }
             }
             byte amt = amttosell;
@@ -468,7 +468,7 @@ namespace ZaupShop
             {
                 message = ZaupShop.Instance.Translate("sell_items_off", new object[] { });
                 UnturnedChat.Say(playerid, message);
-                return;
+                return false;
             }
             string name = null;
             ItemAsset vAsset = null;
@@ -491,7 +491,7 @@ namespace ZaupShop
             {
                 message = ZaupShop.Instance.Translate("could_not_find", new object[] {components[0]});
                 UnturnedChat.Say(playerid, message);
-                return;
+                return false;
             }
             else if (name == null && id != 0)
             {
@@ -503,14 +503,14 @@ namespace ZaupShop
             {
                 message = ZaupShop.Instance.Translate("not_have_item_sell", new object[] {name});
                 UnturnedChat.Say(playerid, message);
-                return;
+                return false;
             }
             List<InventorySearch> list = playerid.Inventory.search(id, true, true);
             if (list.Count == 0 || (vAsset.amount == 1 && list.Count < amttosell))
             {
                 message = ZaupShop.Instance.Translate("not_enough_items_sell", new object[] {amttosell.ToString(), name});
                 UnturnedChat.Say(playerid, message);
-                return;
+                return false;
             }
             if (vAsset.amount > 1)
             {
@@ -523,7 +523,7 @@ namespace ZaupShop
                 {
                     message = ZaupShop.Instance.Translate("not_enough_ammo_sell", new object[] {name});
                     UnturnedChat.Say(playerid, message);
-                    return;
+                    return false;
                 }
             }
             // We got this far, so let's buy back the items and give them money.
@@ -533,7 +533,7 @@ namespace ZaupShop
             {
                 message = ZaupShop.Instance.Translate("no_sell_price_set", new object[] { name });
                 UnturnedChat.Say(playerid, message);
-                return;
+                return false;
             }
             byte quality = 100;
             decimal peritemprice = 0;
@@ -596,6 +596,7 @@ namespace ZaupShop
                 ZaupShop.Instance.OnShopSell(playerid, addmoney, amt, id);
             playerid.Player.gameObject.SendMessage("ZaupShopOnSell", new object[] { playerid, addmoney, amt, id }, SendMessageOptions.DontRequireReceiver);
             UnturnedChat.Say(playerid, message);
+            return true;
         }
 
     }
