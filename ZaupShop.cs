@@ -201,7 +201,7 @@ namespace ZaupShop
         public delegate void PlayerShopSell(UnturnedPlayer player, decimal amt, byte items, ushort item);
         public event PlayerShopSell OnShopSell;
 
-        public void Buy(UnturnedPlayer playerid, string[] components0)
+        public bool Buy(UnturnedPlayer playerid, string[] components0)
         {
             string message;
             if (components0.Length == 0)
@@ -209,7 +209,7 @@ namespace ZaupShop
                 message = ZaupShop.Instance.Translate("buy_command_usage", new object[] {});
                 // We are going to print how to use
                 UnturnedChat.Say(playerid, message);
-                return;
+                return false;
             }
             byte amttobuy = 1;
             if (components0.Length > 1)
@@ -218,7 +218,7 @@ namespace ZaupShop
                 {
                     message = ZaupShop.Instance.Translate("invalid_amt", new object[] { });
                     UnturnedChat.Say(playerid, message);
-                    return;
+                    return false;
                 }
             }
             string[] components = Parser.getComponentsFromSerial(components0[0], '.');
@@ -227,7 +227,7 @@ namespace ZaupShop
                 message = ZaupShop.Instance.Translate("buy_command_usage", new object[] { });
                 // We are going to print how to use
                 UnturnedChat.Say(playerid, message);
-                return;
+                return false;
             }
             ushort id;
             switch (components[0])
@@ -237,7 +237,7 @@ namespace ZaupShop
                     {
                         message = ZaupShop.Instance.Translate("buy_vehicles_off", new object[] { });
                         UnturnedChat.Say(playerid, message);
-                        return;
+                        return false;
                     }
                     string name = null;
                     if (!ushort.TryParse(components[1], out id))
@@ -259,7 +259,7 @@ namespace ZaupShop
                     {
                         message = ZaupShop.Instance.Translate("could_not_find", new object[] {components[1]});
                         UnturnedChat.Say(playerid, message);
-                        return;
+                        return false;
                     }
                     else if (name == null && id != 0)
                     {
@@ -271,19 +271,19 @@ namespace ZaupShop
                     {
                         message = ZaupShop.Instance.Translate("vehicle_not_available", new object[] {name});
                         UnturnedChat.Say(playerid, message);
-                        return;
+                        return false;
                     }
                     if (balance < cost)
                     {
                         message = ZaupShop.Instance.Translate("not_enough_currency_msg", new object[] {Uconomy.Instance.Configuration.Instance.MoneyName, "1", name});
                         UnturnedChat.Say(playerid, message);
-                        return;
+                        return false;
                     }
                     if (!playerid.GiveVehicle(id))
                     {
                         message = ZaupShop.Instance.Translate("error_giving_item", new object[] { name });
                         UnturnedChat.Say(playerid, message);
-                        return;
+                        return false;
                     }
                     decimal newbal = Uconomy.Instance.Database.IncreaseBalance(playerid.CSteamID.ToString(), (cost * -1));
                     message = ZaupShop.Instance.Translate("vehicle_buy_msg", new object[] {name, cost, Uconomy.Instance.Configuration.Instance.MoneyName, newbal, Uconomy.Instance.Configuration.Instance.MoneyName});
@@ -291,13 +291,13 @@ namespace ZaupShop
                         ZaupShop.Instance.OnShopBuy(playerid, cost, 1, id, "vehicle");
                     playerid.Player.gameObject.SendMessage("ZaupShopOnBuy", new object[] { playerid, cost, amttobuy, id, "vehicle" }, SendMessageOptions.DontRequireReceiver);
                     UnturnedChat.Say(playerid, message);
-                    break;
+                    return true;
                 default:
                     if (!ZaupShop.Instance.Configuration.Instance.CanBuyItems)
                     {
                         message = ZaupShop.Instance.Translate("buy_items_off", new object[] { });
                         UnturnedChat.Say(playerid, message);
-                        return;
+                        return false;
                     }
                     name = null;
                     if (!ushort.TryParse(components[0], out id))
@@ -319,7 +319,7 @@ namespace ZaupShop
                     {
                         message = ZaupShop.Instance.Translate("could_not_find", new object[] {components[0]});
                         UnturnedChat.Say(playerid, message);
-                        return;
+                        return false;
                     }
                     else if (name == null && id != 0)
                     {
@@ -331,13 +331,13 @@ namespace ZaupShop
                     {
                         message = ZaupShop.Instance.Translate("item_not_available", new object[] {name});
                         UnturnedChat.Say(playerid, message);
-                        return;
+                        return false;
                     }
                     if (balance < cost)
                     {
                         message = ZaupShop.Instance.Translate("not_enough_currency_msg", new object[] {Uconomy.Instance.Configuration.Instance.MoneyName, amttobuy, name});
                         UnturnedChat.Say(playerid, message);
-                        return;
+                        return false;
                     }
                     playerid.GiveItem(id, amttobuy);
                     newbal = Uconomy.Instance.Database.IncreaseBalance(playerid.CSteamID.ToString(), (cost * -1));
@@ -346,7 +346,7 @@ namespace ZaupShop
                         ZaupShop.Instance.OnShopBuy(playerid, cost, amttobuy, id);
                     playerid.Player.gameObject.SendMessage("ZaupShopOnBuy", new object[] { playerid, cost, amttobuy, id, "item" }, SendMessageOptions.DontRequireReceiver);
                     UnturnedChat.Say(playerid, message);
-                    break;
+                    return true;
             }
         }
         public void Cost(UnturnedPlayer playerid, string[] components)
