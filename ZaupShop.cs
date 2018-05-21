@@ -6,8 +6,7 @@ namespace ZaupShop
 {
     public class ZaupShop : Plugin<ZaupShopConfiguration>
     {
-        public DatabaseMgr ShopDB;
-        public static ZaupShop Instance;
+        public DatabaseMgr Database;
         public override Dictionary<string, string> DefaultTranslations => new Dictionary<string, string>
         {
             {
@@ -174,15 +173,10 @@ namespace ZaupShop
 
         protected override void OnLoad(bool isReload)
         {
-            ShopDB = new DatabaseMgr(Logger, this);
-            
-            if (isReload)
-                return;
-
-            Instance = this;
+            Database = new DatabaseMgr(Logger, this);
         }
 
-        public ZaupShop(IDependencyContainer container) : base(container)
+        public ZaupShop(IDependencyContainer container) : base("ZaupShop", container)
         {
         }
     }

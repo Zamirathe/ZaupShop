@@ -4,7 +4,6 @@ using Rocket.API.Commands;
 using Rocket.API.Economy;
 using Rocket.API.Plugins;
 using Rocket.Core.I18N;
-using Rocket.Core.Plugins;
 using Rocket.Core.User;
 using SDG.Unturned;
 
@@ -13,12 +12,12 @@ namespace ZaupShop
     public class CommandCost : ICommand
     {
         private readonly IEconomyProvider _economy;
-        private readonly Plugin _parentPlugin;
+        private readonly ZaupShop _parentPlugin;
 
         public CommandCost(IPlugin plugin, IEconomyProvider economy)
         {
             _economy = economy;
-            _parentPlugin = (Plugin) plugin;
+            _parentPlugin = (ZaupShop) plugin;
         }
 
         public string Name => "cost";
@@ -82,7 +81,7 @@ namespace ZaupShop
                     {
                         name = ((VehicleAsset)Assets.find(EAssetType.VEHICLE, id)).vehicleName;
                     }
-                    decimal cost = ZaupShop.Instance.ShopDB.GetVehicleCost(id);
+                    decimal cost = _parentPlugin.Database.GetVehicleCost(id);
                     message = _parentPlugin.Translations.Get("vehicle_cost_msg", name, cost.ToString(CultureInfo.CurrentCulture), _economy.DefaultCurrency.Name);
                     if (cost <= 0m)
                     {
@@ -117,8 +116,8 @@ namespace ZaupShop
                     {
                         name = ((ItemAsset)Assets.find(EAssetType.ITEM, id)).itemName;
                     }
-                    cost = ZaupShop.Instance.ShopDB.GetItemCost(id);
-                    decimal bbp = ZaupShop.Instance.ShopDB.GetItemBuyPrice(id);
+                    cost = _parentPlugin.Database.GetItemCost(id);
+                    decimal bbp = _parentPlugin.Database.GetItemBuyPrice(id);
                     message = _parentPlugin.Translations.Get("item_cost_msg", name, cost.ToString(CultureInfo.CurrentCulture), _economy.DefaultCurrency.Name, bbp.ToString(CultureInfo.CurrentCulture), _economy.DefaultCurrency.Name);
                     if (cost <= 0m)
                     {

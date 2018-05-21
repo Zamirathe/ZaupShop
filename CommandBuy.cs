@@ -16,11 +16,11 @@ namespace ZaupShop
     {
         private readonly IEconomyProvider _economy;
         private readonly IEventManager _eventManager;
-        private readonly Plugin _parentPlugin;
+        private readonly ZaupShop _parentPlugin;
 
         public CommandBuy(IPlugin plugin, IEconomyProvider economy, IEventManager eventManager)
         {
-            _parentPlugin = (Plugin) plugin;
+            _parentPlugin = (ZaupShop) plugin;
             _economy = economy;
             _eventManager = eventManager;
         }
@@ -67,7 +67,7 @@ namespace ZaupShop
             switch (components[0])
             {
                 case "v":
-                    if (!ZaupShop.Instance.ConfigurationInstance.CanBuyVehicles)
+                    if (!_parentPlugin.ConfigurationInstance.CanBuyVehicles)
                     {
                         context.User.SendLocalizedMessage(_parentPlugin.Translations, "buy_vehicles_off");
                         return;
@@ -94,7 +94,7 @@ namespace ZaupShop
                     {
                         name = ((VehicleAsset)Assets.find(EAssetType.VEHICLE, id)).vehicleName;
                     }
-                    decimal cost = ZaupShop.Instance.ShopDB.GetVehicleCost(id);
+                    decimal cost = _parentPlugin.Database.GetVehicleCost(id);
                     decimal balance = _economy.GetBalance(context.User);
 
                     if (cost <= 0m)
@@ -125,7 +125,7 @@ namespace ZaupShop
                     context.User.SendLocalizedMessage(_parentPlugin.Translations, "vehicle_buy_msg", name, cost, _economy.DefaultCurrency.Name, newBal, _economy.DefaultCurrency.Name);
                     return;
                 default:
-                    if (!ZaupShop.Instance.ConfigurationInstance.CanBuyItems)
+                    if (!_parentPlugin.ConfigurationInstance.CanBuyItems)
                     {
                         player.User.SendLocalizedMessage(_parentPlugin.Translations, "buy_items_off");
                         return;
@@ -152,7 +152,7 @@ namespace ZaupShop
                     {
                         name = ((ItemAsset)Assets.find(EAssetType.ITEM, id)).itemName;
                     }
-                    cost = decimal.Round(ZaupShop.Instance.ShopDB.GetItemCost(id) * amttobuy, 2);
+                    cost = decimal.Round(_parentPlugin.Database.GetItemCost(id) * amttobuy, 2);
                     balance = _economy.GetBalance(context.User);
 
                     if (cost <= 0m)

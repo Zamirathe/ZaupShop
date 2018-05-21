@@ -11,11 +11,11 @@ namespace ZaupShop
 {
     public class CommandShop : ICommand
     {
-        private readonly Plugin _parentPlugin;
+        private readonly ZaupShop _parentPlugin;
 
         public CommandShop(IPlugin plugin)
         {
-            _parentPlugin = (Plugin)plugin;
+            _parentPlugin = (ZaupShop)plugin;
         }
         public string Name => "shop";
         public string Summary => "Allows admins to change, add, or remove items/vehicles from the shop.";
@@ -89,7 +89,7 @@ namespace ZaupShop
                                     throw new CommandWrongUsageException(_parentPlugin.Translations.Get("invalid_id_given"));
                                 }
                                 VehicleAsset va = (VehicleAsset)Assets.find(EAssetType.VEHICLE, id);
-                                success = ZaupShop.Instance.ShopDB.AddVehicle(id, va.vehicleName, decimal.Parse(parameters[2]), change);
+                                success = _parentPlugin.Database.AddVehicle(id, va.vehicleName, decimal.Parse(parameters[2]), change);
                                 if (!success)
                                 {
                                     context.User.SendLocalizedMessage(_parentPlugin.Translations, "error_adding_or_changing", va.vehicleName);
@@ -104,7 +104,7 @@ namespace ZaupShop
                                 }
 
                                 ItemAsset ia = (ItemAsset)Assets.find(EAssetType.ITEM, id);
-                                success = ZaupShop.Instance.ShopDB.AddItem(id, ia.itemName, decimal.Parse(parameters[2]), change);
+                                success = _parentPlugin.Database.AddItem(id, ia.itemName, decimal.Parse(parameters[2]), change);
                                 if (!success)
                                 {
                                     context.User.SendLocalizedMessage(_parentPlugin.Translations, "error_adding_or_changing", ia.itemName);
@@ -125,7 +125,7 @@ namespace ZaupShop
                                 }
 
                                 VehicleAsset va = (VehicleAsset)Assets.find(EAssetType.VEHICLE, id);
-                                success = ZaupShop.Instance.ShopDB.DeleteVehicle(id);
+                                success = _parentPlugin.Database.DeleteVehicle(id);
                                 if (!success)
                                 {
                                     context.User.SendLocalizedMessage(_parentPlugin.Translations, "not_in_shop_to_remove", va.vehicleName);
@@ -141,7 +141,7 @@ namespace ZaupShop
                                 }
 
                                 ItemAsset ia = (ItemAsset)Assets.find(EAssetType.ITEM, id);
-                                success = ZaupShop.Instance.ShopDB.DeleteItem(id);
+                                success = _parentPlugin.Database.DeleteItem(id);
                                 if (!success)
                                 {
                                     context.User.SendLocalizedMessage(_parentPlugin.Translations, "not_in_shop_to_remove", ia.itemName);
@@ -160,7 +160,7 @@ namespace ZaupShop
                         ItemAsset iab = (ItemAsset)Assets.find(EAssetType.ITEM, id);
 
                         var buyb = parameters.Get<decimal>(2);
-                        success = ZaupShop.Instance.ShopDB.SetBuyPrice(id, buyb);
+                        success = _parentPlugin.Database.SetBuyPrice(id, buyb);
                         if (!success)
                         {
                             context.User.SendLocalizedMessage(_parentPlugin.Translations, "not_in_shop_to_buyback", iab.itemName);

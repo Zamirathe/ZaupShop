@@ -17,11 +17,11 @@ namespace ZaupShop
     {
         private readonly IEconomyProvider _economy;
         private readonly IEventManager _eventManager;
-        private readonly Plugin _parentPlugin;
+        private readonly ZaupShop _parentPlugin;
 
         public CommandSell(IPlugin plugin, IEconomyProvider economy, IEventManager eventManager)
         {
-            _parentPlugin = (Plugin)plugin;
+            _parentPlugin = (ZaupShop)plugin;
             _economy = economy;
             _eventManager = eventManager;
         }
@@ -63,7 +63,7 @@ namespace ZaupShop
                 }
             }
             byte amt = amttosell;
-            if (!ZaupShop.Instance.ConfigurationInstance.CanSellItems)
+            if (!_parentPlugin.ConfigurationInstance.CanSellItems)
             {
                 context.User.SendLocalizedMessage(_parentPlugin.Translations, "sell_items_off");
                 return;
@@ -120,7 +120,7 @@ namespace ZaupShop
 
             // We got this far, so let's buy back the items and give them money.
             // Get cost per item.  This will be whatever is set for most items, but changes for ammo and magazines.
-            decimal price = ZaupShop.Instance.ShopDB.GetItemBuyPrice(id);
+            decimal price = _parentPlugin.Database.GetItemBuyPrice(id);
             if (price <= 0.00m)
             {
                 context.User.SendLocalizedMessage(_parentPlugin.Translations, "no_sell_price_set", asset.itemName);
@@ -139,7 +139,7 @@ namespace ZaupShop
                         {
                             player.Player.equipment.dequip();
                         }
-                        if (ZaupShop.Instance.ConfigurationInstance.QualityCounts)
+                        if (_parentPlugin.ConfigurationInstance.QualityCounts)
                             quality = list[0].jar.item.durability;
                         peritemprice = decimal.Round(price * (quality / 100.0m), 2);
                         addmoney += peritemprice;
