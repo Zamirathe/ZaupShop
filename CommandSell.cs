@@ -44,7 +44,7 @@ namespace ZaupShop
 
         public void Execute(ICommandContext context)
         {
-            var player = ((UnturnedUser) context.User).UnturnedPlayer;
+            var player = ((UnturnedUser) context.User).Player;
             var parameters = context.Parameters;
 
             if (parameters.Length == 0 || (parameters.Length > 0 && parameters[0].Trim() == string.Empty))
@@ -135,9 +135,9 @@ namespace ZaupShop
                     // These are single items, not ammo or magazines
                     while (amttosell > 0)
                     {
-                        if (player.Player.equipment.checkSelection(list[0].page, list[0].jar.x, list[0].jar.y))
+                        if (player.NativePlayer.equipment.checkSelection(list[0].page, list[0].jar.x, list[0].jar.y))
                         {
-                            player.Player.equipment.dequip();
+                            player.NativePlayer.equipment.dequip();
                         }
                         if (_parentPlugin.ConfigurationInstance.QualityCounts)
                             quality = list[0].jar.item.durability;
@@ -153,9 +153,9 @@ namespace ZaupShop
                     byte amttosell1 = amttosell;
                     while (amttosell > 0)
                     {
-                        if (player.Player.equipment.checkSelection(list[0].page, list[0].jar.x, list[0].jar.y))
+                        if (player.NativePlayer.equipment.checkSelection(list[0].page, list[0].jar.x, list[0].jar.y))
                         {
-                            player.Player.equipment.dequip();
+                            player.NativePlayer.equipment.dequip();
                         }
                         if (list[0].jar.item.amount >= amttosell)
                         {

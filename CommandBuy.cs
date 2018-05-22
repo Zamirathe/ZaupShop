@@ -45,7 +45,7 @@ namespace ZaupShop
 
         public void Execute(ICommandContext context)
         {
-            var player = ((UnturnedUser) context.User).UnturnedPlayer;
+            var player = ((UnturnedUser) context.User).Player;
 
             var parameters = context.Parameters;
             if (parameters.Length == 0)
