@@ -1,5 +1,6 @@
 ﻿using Rocket.API.Eventing;
 using Rocket.API.Player;
+using Rocket.Core.Eventing;
 
 namespace ZaupShop.Events
 {
