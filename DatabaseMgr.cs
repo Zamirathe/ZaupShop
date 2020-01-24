@@ -1,96 +1,96 @@
-﻿using I18N.West;
+﻿using System;
+using I18N.West;
 using MySql.Data.MySqlClient;
+using Rocket.API.Logging;
 using Rocket.Core.Logging;
-using Rocket.API;
-using System;
-using fr34kyn01535.Uconomy;
 
 namespace ZaupShop
 {
     public class DatabaseMgr
     {
+        private readonly ZaupShop _zaupShop;
+        private readonly ILogger _logger;
+
         // The base code for this class comes from Uconomy itself.
 
-        internal DatabaseMgr()
+        internal DatabaseMgr(ILogger logger, ZaupShop zaupShop)
         {
+            _zaupShop = zaupShop;
+            _logger = logger;
             CP1250 cP1250 = new CP1250();
-            this.CheckSchema();
+            CheckSchema();
         }
 
-        internal void CheckSchema()
+        private void CheckSchema()
         {
             try
             {
-                MySqlConnection mySqlConnection = this.createConnection();
+                MySqlConnection mySqlConnection = CreateConnection();
                 MySqlCommand mySqlCommand = mySqlConnection.CreateCommand();
-                mySqlCommand.CommandText = string.Concat("show tables like '", ZaupShop.Instance.Configuration.Instance.ItemShopTableName, "'");
+                mySqlCommand.CommandText = string.Concat("show tables like '", _zaupShop.ConfigurationInstance.ItemShopTableName, "'");
                 mySqlConnection.Open();
                 if (mySqlCommand.ExecuteScalar() == null)
                 {
-                    mySqlCommand.CommandText = string.Concat("CREATE TABLE `", ZaupShop.Instance.Configuration.Instance.ItemShopTableName, "` (`id` int(6) NOT NULL,`itemname` varchar(32) NOT NULL,`cost` decimal(15,2) NOT NULL DEFAULT '20.00',`buyback` decimal(15,2) NOT NULL DEFAULT '0.00',PRIMARY KEY (`id`)) ");
+                    mySqlCommand.CommandText = string.Concat("CREATE TABLE `", _zaupShop.ConfigurationInstance.ItemShopTableName, "` (`id` int(6) NOT NULL,`itemname` varchar(32) NOT NULL,`cost` decimal(15,2) NOT NULL DEFAULT '20.00',`buyback` decimal(15,2) NOT NULL DEFAULT '0.00',PRIMARY KEY (`id`)) ");
                     mySqlCommand.ExecuteNonQuery();
                 }
                 mySqlConnection.Close();
             }
             catch (Exception exception)
             {
-                Logger.LogException(exception);
+                _logger.LogError(null, exception);
             }
             try
             {
-                MySqlConnection mySqlConnection = this.createConnection();
+                MySqlConnection mySqlConnection = CreateConnection();
                 MySqlCommand mySqlCommand = mySqlConnection.CreateCommand();
-                mySqlCommand.CommandText = string.Concat("show tables like '", ZaupShop.Instance.Configuration.Instance.VehicleShopTableName, "'");
+                mySqlCommand.CommandText = string.Concat("show tables like '", _zaupShop.ConfigurationInstance.VehicleShopTableName, "'");
                 mySqlConnection.Open();
                 if (mySqlCommand.ExecuteScalar() == null)
                 {
-                    mySqlCommand.CommandText = string.Concat("CREATE TABLE `", ZaupShop.Instance.Configuration.Instance.VehicleShopTableName, "` (`id` int(6) NOT NULL,`vehiclename` varchar(32) NOT NULL,`cost` decimal(15,2) NOT NULL DEFAULT '100.00',PRIMARY KEY (`id`)) ");
+                    mySqlCommand.CommandText = string.Concat("CREATE TABLE `", _zaupShop.ConfigurationInstance.VehicleShopTableName, "` (`id` int(6) NOT NULL,`vehiclename` varchar(32) NOT NULL,`cost` decimal(15,2) NOT NULL DEFAULT '100.00',PRIMARY KEY (`id`)) ");
                     mySqlCommand.ExecuteNonQuery();
                 }
                 mySqlConnection.Close();
             }
             catch (Exception exception)
             {
-                Logger.LogException(exception);
+                _logger.LogError(null, exception);
             }
             try
             {
-                MySqlConnection mySqlConnection = this.createConnection();
+                MySqlConnection mySqlConnection = CreateConnection();
                 MySqlCommand mySqlCommand = mySqlConnection.CreateCommand();
-                mySqlCommand.CommandText = string.Concat("show columns from `", ZaupShop.Instance.Configuration.Instance.ItemShopTableName, "` like 'buyback'");
+                mySqlCommand.CommandText = string.Concat("show columns from `", _zaupShop.ConfigurationInstance.ItemShopTableName, "` like 'buyback'");
                 mySqlConnection.Open();
                 if (mySqlCommand.ExecuteScalar() == null)
                 {
-                    mySqlCommand.CommandText = string.Concat("ALTER TABLE `", ZaupShop.Instance.Configuration.Instance.ItemShopTableName, "` ADD `buyback` decimal(15,2) NOT NULL DEFAULT '0.00'");
+                    mySqlCommand.CommandText = string.Concat("ALTER TABLE `", _zaupShop.ConfigurationInstance.ItemShopTableName, "` ADD `buyback` decimal(15,2) NOT NULL DEFAULT '0.00'");
                     mySqlCommand.ExecuteNonQuery();
                 }
                 mySqlConnection.Close();
             }
             catch (Exception exception)
             {
-                Logger.LogException(exception);
+                _logger.LogError(null, exception);
             }
         }
 
-        private MySqlConnection createConnection()
+        public MySqlConnection CreateConnection()
         {
             MySqlConnection mySqlConnection = null;
             try
             {
-                if (Uconomy.Instance.Configuration.Instance.DatabasePort == 0)
+                if (_zaupShop.ConfigurationInstance.DatabasePort == 0)
                 {
-                    Uconomy.Instance.Configuration.Instance.DatabasePort = 3306;
+                    _zaupShop.ConfigurationInstance.DatabasePort = 3306;
+                    _zaupShop.SaveConfiguration();
                 }
-                mySqlConnection = new MySqlConnection(string.Format("SERVER={0};DATABASE={1};UID={2};PASSWORD={3};PORT={4};", new object[] { 
-                    Uconomy.Instance.Configuration.Instance.DatabaseAddress, 
-                    Uconomy.Instance.Configuration.Instance.DatabaseName, 
-                    Uconomy.Instance.Configuration.Instance.DatabaseUsername, 
-                    Uconomy.Instance.Configuration.Instance.DatabasePassword,
-                    Uconomy.Instance.Configuration.Instance.DatabasePort}));
+                mySqlConnection = new MySqlConnection(string.Format("SERVER={0};DATABASE={1};UID={2};PASSWORD={3};PORT={4};", _zaupShop.ConfigurationInstance.DatabaseAddress, _zaupShop.ConfigurationInstance.DatabaseName, _zaupShop.ConfigurationInstance.DatabaseUsername, _zaupShop.ConfigurationInstance.DatabasePassword, _zaupShop.ConfigurationInstance.DatabasePort));
             }
             catch (Exception exception)
             {
-                Logger.LogException(exception);
+                _logger.LogError(null, exception);
             }
             return mySqlConnection;
         }
@@ -99,37 +99,15 @@ namespace ZaupShop
         {
             try
             {
-                MySqlConnection mySqlConnection = this.createConnection();
+                MySqlConnection mySqlConnection = CreateConnection();
                 MySqlCommand mySqlCommand = mySqlConnection.CreateCommand();
                 if (!change)
                 {
-                    mySqlCommand.CommandText = string.Concat(
-                        new string[] { 
-                            "Insert into `", 
-                            ZaupShop.Instance.Configuration.Instance.ItemShopTableName, 
-                            "` (`id`, `itemname`, `cost`) VALUES ('",
-                            id.ToString(),
-                            "', '",
-                            name,
-                            "', '",
-                            cost.ToString(),
-                            "');" 
-                        });
+                    mySqlCommand.CommandText = string.Concat("Insert into `", _zaupShop.ConfigurationInstance.ItemShopTableName, "` (`id`, `itemname`, `cost`) VALUES ('", id.ToString(), "', '", name, "', '", cost.ToString(), "');");
                 }
                 else
                 {
-                    mySqlCommand.CommandText = string.Concat(
-                        new string[] { 
-                            "update `",
-                            ZaupShop.Instance.Configuration.Instance.ItemShopTableName,
-                            "` set itemname='",
-                            name,
-                            "', cost='",
-                            cost.ToString(),
-                            "' where id='",
-                            id.ToString(),
-                            "';" 
-                        });
+                    mySqlCommand.CommandText = string.Concat("update `", _zaupShop.ConfigurationInstance.ItemShopTableName, "` set itemname='", name, "', cost='", cost.ToString(), "' where id='", id.ToString(), "';");
                 }
                 mySqlConnection.Open();
                 int affected = mySqlCommand.ExecuteNonQuery();
@@ -138,14 +116,12 @@ namespace ZaupShop
                 {
                     return true;
                 }
-                else
-                {
-                    return false;
-                }
+
+                return false;
             }
             catch (Exception exception)
             {
-                Logger.LogException(exception);
+                _logger.LogError(null, exception);
                 return false;
             }
         }
@@ -154,37 +130,15 @@ namespace ZaupShop
         {
             try
             {
-                MySqlConnection mySqlConnection = this.createConnection();
+                MySqlConnection mySqlConnection = CreateConnection();
                 MySqlCommand mySqlCommand = mySqlConnection.CreateCommand();
                 if (!change)
                 {
-                    mySqlCommand.CommandText = string.Concat(
-                        new string[] { 
-                            "Insert into `",
-                            ZaupShop.Instance.Configuration.Instance.VehicleShopTableName,
-                            "` (`id`, `vehiclename`, `cost`) VALUES ('",
-                            id.ToString(),
-                            "', '",
-                            name,
-                            "', '",
-                            cost.ToString(),
-                            "');" 
-                        });
+                    mySqlCommand.CommandText = string.Concat("Insert into `", _zaupShop.ConfigurationInstance.VehicleShopTableName, "` (`id`, `vehiclename`, `cost`) VALUES ('", id.ToString(), "', '", name, "', '", cost.ToString(), "');");
                 }
                 else
                 {
-                    mySqlCommand.CommandText = string.Concat(
-                        new string[] { 
-                            "update `",
-                            ZaupShop.Instance.Configuration.Instance.VehicleShopTableName,
-                            "` set vehiclename='",
-                            name,
-                            "', cost='",
-                            cost.ToString(),
-                            "' where id='",
-                            id.ToString(),
-                            "';" 
-                        });
+                    mySqlCommand.CommandText = string.Concat("update `", _zaupShop.ConfigurationInstance.VehicleShopTableName, "` set vehiclename='", name, "', cost='", cost.ToString(), "' where id='", id.ToString(), "';");
                 }
                 mySqlConnection.Open();
                 int affected = mySqlCommand.ExecuteNonQuery();
@@ -193,14 +147,12 @@ namespace ZaupShop
                 {
                     return true;
                 }
-                else
-                {
-                    return false;
-                }
+
+                return false;
             }
             catch (Exception exception)
             {
-                Logger.LogException(exception);
+                _logger.LogError(null, exception);
                 return false;
             }
         }
@@ -210,15 +162,9 @@ namespace ZaupShop
             decimal num = new decimal(0);
             try
             {
-                MySqlConnection mySqlConnection = this.createConnection();
+                MySqlConnection mySqlConnection = CreateConnection();
                 MySqlCommand mySqlCommand = mySqlConnection.CreateCommand();
-                mySqlCommand.CommandText = string.Concat(new string[] { 
-                    "select `cost` from `",
-                    ZaupShop.Instance.Configuration.Instance.ItemShopTableName,
-                    "` where `id` = '",
-                    id.ToString(),
-                    "';" 
-                });
+                mySqlCommand.CommandText = string.Concat("select `cost` from `", _zaupShop.ConfigurationInstance.ItemShopTableName, "` where `id` = '", id.ToString(), "';");
                 mySqlConnection.Open();
                 object obj = mySqlCommand.ExecuteScalar();
                 if (obj != null)
@@ -229,7 +175,7 @@ namespace ZaupShop
             }
             catch (Exception exception)
             {
-                Logger.LogException(exception);
+                _logger.LogError(null, exception);
             }
             return num;
         }
@@ -239,15 +185,9 @@ namespace ZaupShop
             decimal num = new decimal(0);
             try
             {
-                MySqlConnection mySqlConnection = this.createConnection();
+                MySqlConnection mySqlConnection = CreateConnection();
                 MySqlCommand mySqlCommand = mySqlConnection.CreateCommand();
-                mySqlCommand.CommandText = string.Concat(new string[] { 
-                    "select `cost` from `",
-                    ZaupShop.Instance.Configuration.Instance.VehicleShopTableName, 
-                    "` where `id` = '", 
-                    id.ToString(), 
-                    "';" 
-                });
+                mySqlCommand.CommandText = string.Concat("select `cost` from `", _zaupShop.ConfigurationInstance.VehicleShopTableName, "` where `id` = '", id.ToString(), "';");
                 mySqlConnection.Open();
                 object obj = mySqlCommand.ExecuteScalar();
                 if (obj != null)
@@ -258,7 +198,7 @@ namespace ZaupShop
             }
             catch (Exception exception)
             {
-                Logger.LogException(exception);
+                _logger.LogError(null, exception);
             }
             return num;
         }
@@ -267,16 +207,9 @@ namespace ZaupShop
         {
             try
             {
-                MySqlConnection mySqlConnection = this.createConnection();
+                MySqlConnection mySqlConnection = CreateConnection();
                 MySqlCommand mySqlCommand = mySqlConnection.CreateCommand();
-                mySqlCommand.CommandText = string.Concat(
-                    new string[] { 
-                        "delete from `",
-                        ZaupShop.Instance.Configuration.Instance.ItemShopTableName, 
-                        "` where id='", 
-                        id.ToString(), 
-                        "';" 
-                    });
+                mySqlCommand.CommandText = string.Concat("delete from `", _zaupShop.ConfigurationInstance.ItemShopTableName, "` where id='", id.ToString(), "';");
                 mySqlConnection.Open();
                 int affected = mySqlCommand.ExecuteNonQuery();
                 mySqlConnection.Close();
@@ -284,14 +217,12 @@ namespace ZaupShop
                 {
                     return true;
                 }
-                else
-                {
-                    return false;
-                }
+
+                return false;
             }
             catch (Exception exception)
             {
-                Logger.LogException(exception);
+                _logger.LogError(null, exception);
                 return false;
             }
         }
@@ -300,16 +231,9 @@ namespace ZaupShop
         {
             try
             {
-                MySqlConnection mySqlConnection = this.createConnection();
+                MySqlConnection mySqlConnection = CreateConnection();
                 MySqlCommand mySqlCommand = mySqlConnection.CreateCommand();
-                mySqlCommand.CommandText = string.Concat(
-                    new string[] { 
-                        "delete from `", 
-                        ZaupShop.Instance.Configuration.Instance.VehicleShopTableName,
-                        "` where id='", 
-                        id.ToString(), 
-                        "';" 
-                    });
+                mySqlCommand.CommandText = string.Concat("delete from `", _zaupShop.ConfigurationInstance.VehicleShopTableName, "` where id='", id.ToString(), "';");
                 mySqlConnection.Open();
                 int affected = mySqlCommand.ExecuteNonQuery();
                 mySqlConnection.Close();
@@ -317,14 +241,12 @@ namespace ZaupShop
                 {
                     return true;
                 }
-                else
-                {
-                    return false;
-                }
+
+                return false;
             }
             catch (Exception exception)
             {
-                Logger.LogException(exception);
+                _logger.LogError(null, exception);
                 return false;
             }
         }
@@ -333,18 +255,9 @@ namespace ZaupShop
         {
             try
             {
-                MySqlConnection mySqlConnection = this.createConnection();
+                MySqlConnection mySqlConnection = CreateConnection();
                 MySqlCommand mySqlCommand = mySqlConnection.CreateCommand();
-                mySqlCommand.CommandText = string.Concat(
-                    new string[] { 
-                        "update `", 
-                        ZaupShop.Instance.Configuration.Instance.ItemShopTableName,
-                        "` set `buyback`='",
-                        cost.ToString(), 
-                        "' where id='", 
-                        id.ToString(), 
-                        "';" 
-                    });
+                mySqlCommand.CommandText = string.Concat("update `", _zaupShop.ConfigurationInstance.ItemShopTableName, "` set `buyback`='", cost.ToString(), "' where id='", id.ToString(), "';");
                 mySqlConnection.Open();
                 int affected = mySqlCommand.ExecuteNonQuery();
                 mySqlConnection.Close();
@@ -352,14 +265,12 @@ namespace ZaupShop
                 {
                     return true;
                 }
-                else
-                {
-                    return false;
-                }
+
+                return false;
             }
             catch (Exception exception)
             {
-                Logger.LogException(exception);
+                _logger.LogError(null, exception);
                 return false;
             }
         }
@@ -369,15 +280,9 @@ namespace ZaupShop
             decimal num = new decimal(0);
             try
             {
-                MySqlConnection mySqlConnection = this.createConnection();
+                MySqlConnection mySqlConnection = CreateConnection();
                 MySqlCommand mySqlCommand = mySqlConnection.CreateCommand();
-                mySqlCommand.CommandText = string.Concat(new string[] { 
-                    "select `buyback` from `",
-                    ZaupShop.Instance.Configuration.Instance.ItemShopTableName,
-                    "` where `id` = '",
-                    id.ToString(),
-                    "';" 
-                });
+                mySqlCommand.CommandText = string.Concat("select `buyback` from `", _zaupShop.ConfigurationInstance.ItemShopTableName, "` where `id` = '", id.ToString(), "';");
                 mySqlConnection.Open();
                 object obj = mySqlCommand.ExecuteScalar();
                 if (obj != null)
@@ -388,7 +293,7 @@ namespace ZaupShop
             }
             catch (Exception exception)
             {
-                Logger.LogException(exception);
+                _logger.LogError(null, exception);
             }
             return num;
         }

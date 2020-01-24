@@ -6,9 +6,9 @@ There are 3 commands: /shop, /cost, and /buy.
 /shop is meant for admins only, but is not limited to that. You can add groups to have the ability to use this command by adding shop in their group of commands and one or more of the following: shop.add (adding to the shop), shop.rem (removing from the shop), shop.chng (changing costs), or shop.* (all 3) to the group permissions.
 
 Usage:
-/buy <i or v>.<item name or id>/[amount] (optional) – This will use the same name to id find as /i. i stands for item, v stands for vehicle.  Amount is only available for items and is optional, default is 1.
-/cost <i or v>.<item name or id> – Same as above but will display the user the cost of asked for item/vehicle.
-/shop <add/rem/chng>/<i or v>.<itemid>/<cost> – This is the most complicated as it has multiple options. add (Adding), rem (Removing), chng (Change cost), i for Item and v for Vehicle and is required, itemids only (no names) for this command and one is required. Cost is not required for rem, but is required for the other two.
+/buy <i or v>.<item name or id>/[amount] (optional): This will use the same name to id find as /i. i stands for item, v stands for vehicle.  Amount is only available for items and is optional, default is 1.
+/cost <i or v>.<item name or id>: Same as above but will display the user the cost of asked for item/vehicle.
+/shop <add/rem/chng>/<i or v>.<itemid>/<cost>: This is the most complicated as it has multiple options. add (Adding), rem (Removing), chng (Change cost), i for Item and v for Vehicle and is required, itemids only (no names) for this command and one is required. Cost is not required for rem, but is required for the other two.
 
 Only /shop can be run from both the console and in game.
 

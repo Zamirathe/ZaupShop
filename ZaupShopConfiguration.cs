@@ -1,25 +1,17 @@
-﻿using System;
-using Rocket.API;
-
-namespace ZaupShop
+﻿namespace ZaupShop
 {
-    public class ZaupShopConfiguration : IRocketPluginConfiguration
+    public class ZaupShopConfiguration
     {
-        public string ItemShopTableName;
-        public string VehicleShopTableName;
-        public bool CanBuyItems;
-        public bool CanBuyVehicles;
-        public bool CanSellItems;
-        public bool QualityCounts;
-
-        public void LoadDefaults()
-        {
-            ItemShopTableName = "uconomyitemshop";
-            VehicleShopTableName = "uconomyvehicleshop";
-            CanBuyItems = true;
-            CanBuyVehicles = false;
-            CanSellItems = true;
-            QualityCounts = true;
-        }
+        public string ItemShopTableName { get; set; } = "uconomyitemshop";
+        public string VehicleShopTableName { get; set; } = "uconomyvehicleshop";
+        public bool CanBuyItems { get; set; } = true;
+        public bool CanBuyVehicles { get; set; } = false;
+        public bool CanSellItems { get; set; } = true;
+        public bool QualityCounts { get; set; } = true;
+        public string DatabaseName { get; set; } = "unturned";
+        public string DatabaseAddress { get; set; } = "localhost";
+        public int DatabasePort { get; set; } = 3306;
+        public string DatabaseUsername { get; set; } = "root";
+        public string DatabasePassword { get; set; } = "mypassword";
     }
 }
